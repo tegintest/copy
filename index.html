@@ -1,1135 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="light dark">
-<title>JetisHub — Админка</title>
-<link rel="canonical" href="https://jetishub.kz/admin.html">
-<meta name="robots" content="noindex">
-<link rel="icon" href="favicon.ico" sizes="48x48">
-<link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://marshrut-9c5z.onrender.com">
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
-<script>
-// theme.js инлайн (раньше отдельный блокирующий запрос, ~460мс по PageSpeed) —
-// источник в theme.js в корне репо, править синхронно в обоих местах.
-(function () {
-  var STORAGE_KEY = 'jetishub-theme';
-  var root = document.documentElement;
-  function getStored() { try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; } }
-  function systemPrefersDark() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
-  function apply(theme) { root.setAttribute('data-theme', theme); }
-  apply(getStored() || (systemPrefersDark() ? 'dark' : 'light'));
-  document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.getElementById('themeToggle');
-    if (!btn) return;
-    function sync() { btn.setAttribute('aria-pressed', String(root.getAttribute('data-theme') === 'dark')); }
-    sync();
-    btn.addEventListener('click', function () {
-      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      apply(next);
-      try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
-      sync();
-    });
-  });
-})();
-</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Маркетолог JetisHUB</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23F6C453'/%3E%3Ctext x='16' y='22' font-size='18' text-anchor='middle' font-family='Arial' font-weight='700' fill='%231A1300'%3EJ%3C/text%3E%3C/svg%3E">
 <style>
-  :root{
-    --bg:#FBFBFA; --ink:#1D1D1F; --soft:#6E6E73; --line:#EAEAE7; --accent:#0A6CC9; --accent-ink:#0857A0;
-    --accent-soft:rgba(10,108,201,.09); --surface:#fff; --surface-2:#F5F5F3; --ok:#2F6F5E; --ok-soft:#DCEAE3;
-    --danger:#B14545; --danger-soft:#F4DADA; --warn:#8A6417; --warn-soft:#F3E7CB;
-    --shadow-sm:0 1px 2px rgba(0,0,0,.02), 0 12px 32px -12px rgba(0,0,0,.06);
-    --shadow-lg:0 24px 64px -16px rgba(0,0,0,.25);
-  }
-  html[data-theme="dark"]{
-    --bg:#0A0A0B; --ink:#F5F5F7; --soft:rgba(245,245,247,.62); --line:rgba(255,255,255,.12); --accent:#4DA3FF;
-    --accent-ink:#7CBBFF; --accent-soft:rgba(77,163,255,.16); --surface:#17171A; --surface-2:#1E1E22;
-    --ok:#5FC79A; --ok-soft:rgba(95,199,154,.16); --danger:#FF7A70; --danger-soft:rgba(255,122,112,.14);
-    --warn:#E0B060; --warn-soft:rgba(224,176,96,.14);
-    --shadow-sm:0 1px 2px rgba(0,0,0,.35), 0 12px 32px -12px rgba(0,0,0,.55);
-    --shadow-lg:0 24px 64px -16px rgba(0,0,0,.7);
-  }
+  :root{ --bg:#FBFBFA; --surface:#FFFFFF; --ink:#1D1D1F; --soft:#5F5F66; --line:rgba(29,29,31,.12); --accent:#F6C453; --accent-ink:#1A1300; --user:#EFEFEA; --ok:#12803F; --bad:#CF2F35; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#0B0B0D; --surface:#161618; --ink:#F5F5F7; --soft:#A1A1AA; --line:rgba(255,255,255,.14); --user:#1E1E21; --ok:#55D68F; --bad:#FF8587; } }
   *{ box-sizing:border-box; }
-  html{ scroll-behavior:smooth; }
-  body{ margin:0; font-family:'Manrope',system-ui,sans-serif; background:var(--bg); color:var(--ink); transition:background .2s ease, color .2s ease; font-size:14px; }
-  .hidden{ display:none !important; }
-  .muted{ color:var(--soft); font-size:12px; }
-  b{ font-weight:700; }
-
-  /* Кнопки и поля */
-  button{ font-family:inherit; cursor:pointer; border:1px solid transparent; border-radius:10px; padding:9px 16px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:7px; transition:background .15s ease, border-color .15s ease, color .15s ease, opacity .15s ease; }
-  button:disabled{ opacity:.45; cursor:not-allowed; }
-  button:focus-visible, a:focus-visible, .row-click:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .btn-primary{ background:var(--accent); color:#fff; }
-  .btn-primary:hover:not(:disabled){ background:var(--accent-ink); }
-  .btn-ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
-  .btn-ghost:hover:not(:disabled){ border-color:var(--ink); }
-  .btn-soft{ background:var(--accent-soft); color:var(--accent-ink); }
-  .btn-soft:hover:not(:disabled){ background:var(--accent); color:#fff; }
-  .btn-danger{ background:var(--danger-soft); color:var(--danger); }
-  .btn-danger:hover:not(:disabled){ background:var(--danger); color:#fff; }
-  .btn-sm{ padding:6px 12px; font-size:12px; }
-  .btn-icon{ padding:8px; }
-  label{ display:block; font-size:12px; font-weight:700; color:var(--soft); margin:0 0 6px; }
-  input, select, textarea{ font-family:inherit; font-size:14px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%; margin:0 0 14px; }
-  input:focus, select:focus, textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
-  textarea{ resize:vertical; }
-  select{ cursor:pointer; }
-  input[type=checkbox]{ width:auto; margin:0; accent-color:var(--accent); cursor:pointer; }
-  .inline-select{ width:auto; margin:0; padding:8px 12px; font-size:13px; }
-  .field-row{ display:flex; gap:12px; flex-wrap:wrap; }
-  .field-row > div{ flex:1 1 180px; }
-  .search{ position:relative; flex:1 1 240px; max-width:360px; }
-  .search svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--soft); pointer-events:none; }
-  .search input{ padding-left:36px; margin:0; }
-  .search kbd{ position:absolute; right:10px; top:50%; transform:translateY(-50%); font:600 11px 'Manrope',sans-serif; color:var(--soft); border:1px solid var(--line); border-radius:6px; padding:1px 7px; background:var(--surface-2); pointer-events:none; }
-
-  /* Каркас */
-  .topbar{ position:sticky; top:0; z-index:40; display:flex; align-items:center; gap:12px; padding:11px 24px; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
-  .brand{ font-family:'Space Grotesk','Manrope',sans-serif; font-weight:700; font-size:18px; letter-spacing:-.01em; display:flex; align-items:center; gap:10px; }
-  .logo{ width:30px; height:30px; border-radius:9px; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; }
-  .spacer{ flex:1; }
-  .updated{ font-size:12px; color:var(--soft); }
-  .theme-toggle{ --w:50px; --h:27px; position:relative; flex:0 0 auto; width:var(--w); height:var(--h); padding:0; background:var(--bg); border:1px solid var(--line); border-radius:999px; }
-  .theme-toggle-thumb{ position:absolute; top:2px; left:2px; width:calc(var(--h) - 6px); height:calc(var(--h) - 6px); border-radius:50%; background:var(--surface); box-shadow:0 1px 2px rgba(0,0,0,.2); display:flex; align-items:center; justify-content:center; color:var(--soft); transition:transform .3s cubic-bezier(.4,0,.2,1); }
-  .theme-toggle-thumb svg{ width:13px; height:13px; }
-  .theme-toggle .icon-moon{ display:none; }
-  html[data-theme="dark"] .theme-toggle-thumb{ transform:translateX(calc(var(--w) - var(--h))); color:var(--accent); }
-  html[data-theme="dark"] .theme-toggle .icon-sun{ display:none; }
-  html[data-theme="dark"] .theme-toggle .icon-moon{ display:block; }
-  .shell{ max-width:1440px; margin:0 auto; padding:24px; display:grid; grid-template-columns:210px minmax(0,1fr); gap:28px; align-items:start; }
-  .nav{ position:sticky; top:76px; display:flex; flex-direction:column; gap:4px; }
-  .nav-btn{ width:100%; justify-content:flex-start; background:transparent; border:none; border-radius:12px; padding:11px 14px; font-size:14px; color:var(--soft); }
-  .nav-btn:hover{ background:var(--surface-2); color:var(--ink); }
-  .nav-btn.is-active{ background:var(--accent-soft); color:var(--accent-ink); }
-  .nav-btn .pill{ margin-left:auto; font-size:11px; font-weight:700; background:var(--surface-2); color:var(--soft); border-radius:999px; padding:1px 8px; }
-  .nav-btn.is-active .pill{ background:var(--surface); }
-  .nav-btn .pill.alert{ background:var(--danger-soft); color:var(--danger); }
-  .panel{ display:none; }
-  .panel.is-active{ display:block; animation:fade .18s ease; }
-  @keyframes fade{ from{ opacity:0; transform:translateY(4px) } to{ opacity:1; transform:none } }
-  .page-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
-  .page-head h1{ font-family:'Space Grotesk','Manrope',sans-serif; font-weight:700; letter-spacing:-.02em; font-size:clamp(22px,3vw,28px); margin:0; }
-  .page-head p{ margin:4px 0 0; color:var(--soft); font-size:13px; }
-
-  .card{ background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:22px; margin-bottom:18px; box-shadow:var(--shadow-sm); }
-  .card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-  .card h2{ font-family:'Space Grotesk','Manrope',sans-serif; font-weight:700; font-size:16px; margin:0; display:flex; align-items:center; gap:9px; }
-  .card h2 .count{ color:var(--soft); font-weight:600; }
-  .help{ color:var(--soft); font-size:12px; margin:-8px 0 14px; }
-  .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
-  .sub-title{ font-family:'Space Grotesk','Manrope',sans-serif; font-weight:700; font-size:14px; margin:22px 0 10px; }
-  .sub-title:first-child{ margin-top:0; }
-
-  /* Таблицы */
-  .table-scroll{ overflow-x:auto; border-radius:12px; }
-  .table-scroll.v{ max-height:520px; overflow-y:auto; }
-  .table-scroll.v thead th{ position:sticky; top:0; background:var(--surface); z-index:1; }
-  table{ width:100%; border-collapse:collapse; font-size:13px; }
-  th{ text-align:left; text-transform:uppercase; letter-spacing:.03em; font-size:10px; color:var(--soft); padding:10px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
-  td{ padding:11px 8px; border-bottom:1px solid var(--line); vertical-align:middle; }
-  tbody tr:hover{ background:var(--surface-2); }
-  tr.row-click{ cursor:pointer; }
-  tr.is-blocked td:not(:first-child){ opacity:.6; }
-  td.chev{ color:var(--soft); width:28px; text-align:right; }
-  .user-cell{ display:flex; align-items:center; gap:10px; min-width:0; }
-  .avatar{ flex:0 0 auto; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; font-family:'Space Grotesk','Manrope',sans-serif; }
-  .avatar.lg{ width:48px; height:48px; font-size:18px; }
-  .u-main{ font-weight:700; word-break:break-all; }
-  .u-badges{ display:flex; gap:6px; flex-wrap:wrap; margin-top:3px; }
-  .tag{ display:inline-block; font-size:11px; font-weight:700; border-radius:999px; padding:2px 9px; white-space:nowrap; }
-  .tag.ok{ background:var(--ok-soft); color:var(--ok); }
-  .tag.bad{ background:var(--danger-soft); color:var(--danger); }
-  .tag.warn{ background:var(--warn-soft); color:var(--warn); }
-  .tag.neu{ background:var(--surface-2); color:var(--soft); }
-  .tag.kt{ background:var(--accent-soft); color:var(--accent-ink); }
-  .acc-chips{ display:flex; flex-wrap:wrap; gap:5px; }
-  .chip-acc{ display:inline-flex; align-items:center; gap:5px; background:var(--ok-soft); color:var(--ok); border-radius:999px; padding:3px 10px; font-size:11px; font-weight:700; }
-  .chip-acc.kk{ background:var(--accent-soft); color:var(--accent-ink); }
-  .chip-acc.expired{ background:var(--warn-soft); color:var(--warn); }
-  .chip-acc i{ font-style:normal; font-weight:600; opacity:.85; font-size:10px; }
-  .chip-acc button{ background:transparent; color:inherit; border:none; padding:0 2px; font-size:14px; line-height:1; border-radius:50%; }
-  .chip-acc button:hover{ background:rgba(0,0,0,.12); }
-  .pbar{ display:flex; align-items:center; gap:8px; min-width:120px; }
-  .pbar .track{ flex:1; height:7px; background:var(--surface-2); border-radius:99px; overflow:hidden; }
-  .pbar .fill{ height:100%; border-radius:99px; }
-  .pbar b{ font-size:12px; min-width:34px; text-align:right; }
-
-  /* Сегменты-фильтры */
-  .seg{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
-  .seg button{ background:var(--surface-2); color:var(--soft); border-radius:999px; padding:7px 14px; font-size:12px; }
-  .seg button:hover{ color:var(--ink); }
-  .seg button.on{ background:var(--ink); color:var(--bg); }
-  .seg .n{ font-weight:800; opacity:.7; }
-
-  /* KPI и обзор */
-  .kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
-  .kpi{ background:var(--surface-2); color:var(--ink); border-radius:14px; padding:14px 16px; text-align:left; display:block; width:100%; border:1px solid transparent; font-family:inherit; }
-  button.kpi:hover{ border-color:var(--accent); }
-  .kpi .n{ font-family:'Space Grotesk','Manrope',sans-serif; font-weight:700; font-size:26px; line-height:1.1; }
-  .kpi .n small{ font-size:12px; font-weight:600; color:var(--ok); margin-left:6px; }
-  .kpi .l{ color:var(--soft); font-size:12px; margin-top:4px; font-weight:600; }
-  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  .grid-2 > .card{ margin-bottom:0; }
-  .att{ width:100%; justify-content:flex-start; text-align:left; background:var(--surface-2); border-radius:12px; padding:12px 14px; margin-bottom:8px; font-size:13px; color:var(--ink); }
-  .att:hover{ background:var(--accent-soft); }
-  .att .att-n{ font-family:'Space Grotesk','Manrope',sans-serif; font-weight:700; font-size:18px; min-width:34px; }
-  .att.warn .att-n{ color:var(--warn); } .att.bad .att-n{ color:var(--danger); }
-  .att .go{ margin-left:auto; color:var(--soft); }
-  .all-good{ display:flex; align-items:center; gap:10px; color:var(--ok); font-weight:600; padding:14px; background:var(--ok-soft); border-radius:12px; }
-  .quick{ display:flex; gap:10px; flex-wrap:wrap; }
-  .log-line{ display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
-  .log-line:last-child{ border-bottom:none; }
-  .log-line .t{ color:var(--soft); font-size:12px; min-width:84px; }
-  .bars{ display:flex; align-items:flex-end; gap:3px; height:110px; }
-  .bars .b{ flex:1; background:var(--accent); border-radius:3px 3px 0 0; min-height:2px; opacity:.85; }
-  .bars .b:hover{ opacity:1; }
-  .bars-x{ display:flex; justify-content:space-between; color:var(--soft); font-size:11px; margin-top:6px; }
-  .trend{ background:var(--surface-2); border-radius:14px; padding:12px 14px; }
-  .trend svg{ width:100%; height:90px; display:block; }
-
-  /* Пустые состояния */
-  .state{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; color:var(--soft); text-align:center; gap:10px; }
-  .state svg{ opacity:.5; }
-
-  /* Панель массовых действий */
-  .bulkbar{ position:sticky; bottom:16px; z-index:20; display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:var(--ink); color:var(--bg); border-radius:16px; padding:12px 16px; margin-top:14px; box-shadow:var(--shadow-lg); }
-  .bulkbar select{ background:var(--surface); color:var(--ink); }
-  .bulkbar .btn-ghost{ color:var(--bg); border-color:rgba(255,255,255,.3); }
-  html[data-theme="dark"] .bulkbar .btn-ghost{ color:var(--bg); border-color:rgba(0,0,0,.3); }
-
-  /* Окна */
-  .modal-bg{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:flex-start; justify-content:center; padding:32px 16px; overflow-y:auto; z-index:60; animation:fade .15s ease; }
-  .modal{ background:var(--surface); border:1px solid var(--line); border-radius:20px; width:100%; max-width:900px; box-shadow:var(--shadow-lg); }
-  .modal.sm{ max-width:560px; }
-  .modal-head{ display:flex; align-items:center; gap:14px; padding:20px 24px 14px; }
-  .modal-head .who{ flex:1; min-width:0; }
-  .modal-head .who .ttl{ font-family:'Space Grotesk','Manrope',sans-serif; font-weight:700; font-size:18px; word-break:break-all; }
-  .modal-body{ padding:0 24px 24px; }
-  .x-btn{ background:var(--surface-2); color:var(--ink); width:34px; height:34px; padding:0; border-radius:50%; flex:0 0 auto; }
-  .x-btn:hover{ background:var(--line); }
-  .mtabs{ display:flex; gap:4px; border-bottom:1px solid var(--line); padding:0 24px; margin-bottom:18px; }
-  .mtabs button{ background:transparent; border-radius:0; border-bottom:2px solid transparent; color:var(--soft); padding:10px 14px; margin-bottom:-1px; }
-  .mtabs button.on{ color:var(--accent); border-bottom-color:var(--accent); }
-  .box{ background:var(--surface-2); border-radius:14px; padding:16px; margin-bottom:14px; }
-  .box h3{ font-size:13px; margin:0 0 12px; font-weight:800; }
-  .grant-form{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }
-  .grant-form select{ flex:1 1 150px; width:auto; margin:0; }
-  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; }
-  details.danger{ border:1px dashed var(--danger); border-radius:14px; padding:12px 16px; }
-  details.danger summary{ cursor:pointer; font-weight:700; color:var(--danger); font-size:13px; }
-  details.danger .btn-row{ margin-top:12px; }
-  .cred{ background:#1B2030; color:#EDECE6; border-radius:12px; padding:14px 16px; margin-top:12px; }
-  .cred .line{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:6px 0; }
-  .cred .k{ color:#9AA0B4; font-size:12px; }
-  .cred .v{ font-size:15px; word-break:break-all; }
-  .cred button{ background:rgba(255,255,255,.12); color:#fff; padding:5px 12px; font-size:12px; }
-  .cred .note{ color:#E0A060; font-size:12px; margin:8px 0 0; }
-  .switch{ display:flex; gap:4px; background:var(--surface-2); padding:4px; border-radius:12px; margin-bottom:16px; }
-  .switch button{ flex:1; background:transparent; color:var(--soft); }
-  .switch button.on{ background:var(--surface); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.12); }
-  .chk{ display:flex; align-items:center; gap:8px; font-size:14px; font-weight:500; color:var(--ink); margin:0 0 14px; cursor:pointer; }
-
-  /* Вход и уведомления */
-  .gate{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-  .gate .card{ max-width:420px; width:100%; margin:0; padding:32px; }
-  .gate .logo{ width:44px; height:44px; font-size:20px; border-radius:13px; margin-bottom:16px; }
-  .gate h1{ font-family:'Space Grotesk','Manrope',sans-serif; font-size:22px; margin:0 0 6px; }
-  .gate p{ color:var(--soft); margin:0 0 20px; font-size:13px; }
-  .gate .err{ color:var(--danger); font-size:13px; margin:-6px 0 12px; min-height:1em; }
-  .key-wrap{ position:relative; }
-  .key-wrap input{ padding-right:44px; }
-  .key-wrap button{ position:absolute; right:6px; top:6px; background:transparent; color:var(--soft); padding:6px; }
-  .toasts{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; gap:8px; z-index:100; align-items:center; pointer-events:none; }
-  .toast{ background:var(--ink); color:var(--bg); padding:11px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow-lg); animation:fade .2s ease; max-width:90vw; }
-  .toast.err{ background:var(--danger); color:#fff; }
-  .spin{ animation:spin .8s linear infinite; }
-  @keyframes spin{ to{ transform:rotate(360deg) } }
-  .banner-preview{ border-radius:12px; padding:10px 16px; color:#fff; font-weight:600; font-size:13px; text-align:center; margin-bottom:14px; }
-
-  @media (max-width:900px){
-    .topbar{ padding:10px 16px; }
-    .shell{ grid-template-columns:1fr; padding:16px; gap:14px; }
-    .nav{ position:sticky; top:55px; z-index:30; flex-direction:row; overflow-x:auto; background:var(--bg); margin:0 -16px; padding:6px 16px; border-bottom:1px solid var(--line); }
-    .nav-btn{ width:auto; white-space:nowrap; padding:9px 14px; }
-    .grid-2{ grid-template-columns:1fr; }
-    .updated{ display:none; }
-  }
-  @media (max-width:640px){
-    .card{ padding:16px; border-radius:16px; }
-    .modal-head, .modal-body{ padding-left:16px; padding-right:16px; }
-    .mtabs{ padding:0 16px; overflow-x:auto; }
-    .modal-bg{ padding:0; }
-    .modal{ border-radius:0; min-height:100vh; border:none; }
-    .btn-label-hide{ display:none; }
-  }
+  body{ margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 -apple-system,"Segoe UI",Roboto,Arial,sans-serif; }
+  .app{ max-width:980px; margin:0 auto; padding:16px; display:grid; grid-template-columns:320px 1fr; gap:16px; min-height:100vh; }
+  @media (max-width:820px){ .app{ grid-template-columns:1fr; } }
+  h1{ font-size:20px; margin:4px 0 2px; letter-spacing:-.01em; } h1 span{ color:var(--accent); }
+  .sub{ color:var(--soft); font-size:13px; margin:0 0 14px; }
+  .panel{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:14px; align-self:start; position:sticky; top:16px; }
+  .tabs{ display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+  .tab{ border:1px solid var(--line); background:transparent; color:var(--ink); padding:7px 12px; border-radius:999px; font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+  .tab.on{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  label{ display:block; font-size:12px; font-weight:600; color:var(--soft); margin:10px 0 3px; }
+  input, textarea, select{ width:100%; font:inherit; font-size:14px; padding:9px 10px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+  textarea{ resize:vertical; min-height:60px; }
+  input:focus, textarea:focus, select:focus{ outline:2px solid var(--accent); outline-offset:0; border-color:transparent; }
+  .check{ display:flex; gap:8px; align-items:center; font-size:13px; color:var(--soft); margin-top:12px; font-weight:500; }
+  .check input{ width:auto; }
+  .btn{ border:0; border-radius:999px; padding:11px 20px; font:inherit; font-weight:700; cursor:pointer; background:var(--accent); color:var(--accent-ink); }
+  .btn.ghost{ background:transparent; color:var(--soft); border:1px solid var(--line); font-weight:600; padding:8px 14px; font-size:13px; }
+  .btn:disabled{ opacity:.5; cursor:default; }
+  .row{ display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .chat{ display:flex; flex-direction:column; min-width:0; }
+  .log{ flex:1; display:flex; flex-direction:column; gap:12px; padding-bottom:12px; }
+  .empty{ border:1px dashed var(--line); border-radius:16px; padding:28px; color:var(--soft); text-align:center; }
+  .msg{ border-radius:16px; padding:12px 14px; max-width:100%; overflow-wrap:anywhere; }
+  .msg.user{ background:var(--user); align-self:flex-end; white-space:pre-wrap; max-width:90%; }
+  .msg.bot{ background:var(--surface); border:1px solid var(--line); }
+  .msg.err{ border:1px solid var(--bad); color:var(--bad); }
+  .tools{ display:flex; gap:6px; margin-top:8px; align-items:center; }
+  .meta{ font-size:12px; color:var(--soft); margin-left:auto; }
+  .md h1,.md h2,.md h3{ font-size:16px; margin:14px 0 6px; } .md h1{ font-size:18px; }
+  .md p{ margin:6px 0; } .md ul,.md ol{ margin:6px 0; padding-left:22px; }
+  .md table{ border-collapse:collapse; width:100%; font-size:13.5px; margin:8px 0; display:block; overflow-x:auto; }
+  .md th,.md td{ border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; }
+  .md th{ background:var(--user); }
+  .md code{ background:var(--user); padding:1px 5px; border-radius:5px; font-size:.92em; }
+  .md pre{ background:var(--user); padding:10px; border-radius:10px; overflow-x:auto; } .md pre code{ background:none; padding:0; }
+  .md hr{ border:0; border-top:1px solid var(--line); margin:12px 0; }
+  .composer{ position:sticky; bottom:0; background:var(--bg); padding:10px 0 4px; display:flex; gap:8px; align-items:flex-end; border-top:1px solid var(--line); }
+  .composer textarea{ min-height:46px; max-height:180px; }
+  .status{ font-size:13px; color:var(--soft); margin:4px 2px; min-height:18px; }
+  .warn{ background:rgba(207,47,53,.1); color:var(--bad); border-radius:10px; padding:8px 10px; font-size:13px; margin-bottom:10px; display:none; }
 </style>
 </head>
 <body>
-
-<!-- Вход по ключу -->
-<div class="gate hidden" id="gate">
-  <form class="card" id="gateForm" autocomplete="off">
-    <div class="logo" data-ic="shield" data-s="22"></div>
-    <h1>Админка JetisHub</h1>
-    <p>Введите ключ администратора, чтобы продолжить. Ключ хранится только в этом браузере.</p>
-    <label for="gateKey">Ключ администратора</label>
-    <div class="key-wrap">
-      <input id="gateKey" type="password" placeholder="ADMIN_KEY" autocomplete="off" required>
-      <button type="button" id="gateEye" aria-label="Показать или скрыть ключ" data-ic="eye"></button>
+<div class="app">
+  <aside class="panel">
+    <h1>Маркетолог <span>JetisHUB</span></h1>
+    <p class="sub">Сценарии рилсов для Instagram: таргет и информация про магистратуру.</p>
+    <div class="warn" id="keyWarn">Ключ API не найден. Создайте файл <b>.env</b> (см. README) и перезапустите бота.</div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-mode="A">Таргет-рилсы</button>
+      <button class="tab" data-mode="B">Информационные</button>
+      <button class="tab" data-mode="FREE">Свободный чат</button>
     </div>
-    <div class="err" id="gateErr" role="alert"></div>
-    <button class="btn-primary" type="submit" style="width:100%">Войти</button>
-  </form>
-</div>
 
-<div id="app" class="hidden">
-  <header class="topbar">
-    <div class="brand"><span class="logo" data-ic="shield" data-s="17"></span>JetisHub <span style="color:var(--soft);font-weight:600">Админка</span></div>
-    <span class="spacer"></span>
-    <span class="updated" id="updated"></span>
-    <button class="btn-ghost btn-sm" id="refreshBtn" title="Обновить все данные"><span data-ic="refresh" data-s="14"></span><span class="btn-label-hide">Обновить</span></button>
-    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Переключить тему" aria-pressed="false">
-      <span class="theme-toggle-thumb">
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </span>
-    </button>
-    <button class="btn-ghost btn-sm" id="logoutBtn" title="Выйти (ключ будет удалён из браузера)"><span data-ic="logout" data-s="14"></span><span class="btn-label-hide">Выйти</span></button>
-  </header>
+    <form id="formA" data-mode="A">
+      <label>Что рекламируем (угол)</label>
+      <select name="angle">
+        <option>Full подготовка: расклад по баллам</option>
+        <option>Пакет «Профиль»: без лишнего, только профильные</option>
+        <option>Английский: Listening (диктант по сценам из фильмов)</option>
+        <option>Английский: грамматика по темам и звёзды</option>
+        <option>Пробные тесты и симуляция КТ</option>
+        <option>Рассрочка без процентов (снимаем «дорого»)</option>
+      </select>
+      <label>Дата тестирования</label>
+      <select name="date"><option>Лето</option><option>Зима</option><option>Конкретная дата (укажу в уточнении)</option></select>
+      <label>Оффер (что человек получает за заявку)</label>
+      <input name="offer" value="Бесплатный расклад по баллам на твою специальность за 5 минут">
+      <label>CTA и ссылка / номер WhatsApp</label>
+      <input name="cta" placeholder="WhatsApp +7 7XX XXX XX XX">
+      <label>Бюджет в день, ₸</label>
+      <input name="budget" value="5000">
+      <label>Язык</label>
+      <select name="lang"><option>Русский</option><option>Қазақша</option><option>Оба варианта</option></select>
+      <label>Уточнение (необязательно)</label>
+      <textarea name="extra" placeholder="Например: сделай упор на тех, кто боится английского"></textarea>
+    </form>
 
-  <div class="shell">
-    <nav class="nav" id="nav" aria-label="Разделы">
-      <button class="nav-btn" data-tab="overview"><span data-ic="home"></span>Обзор</button>
-      <button class="nav-btn" data-tab="users"><span data-ic="users"></span>Пользователи<span class="pill" id="navUsers">0</span></button>
-      <button class="nav-btn" data-tab="results"><span data-ic="chart"></span>Результаты</button>
-      <button class="nav-btn" data-tab="analytics"><span data-ic="pulse"></span>Аналитика<span class="pill" id="navAnalytics"></span></button>
-      <button class="nav-btn" data-tab="content"><span data-ic="book"></span>Контент<span class="pill" id="navContent"></span></button>
-      <button class="nav-btn" data-tab="audit"><span data-ic="clock"></span>Журнал</button>
-    </nav>
+    <form id="formB" data-mode="B" hidden>
+      <label>Тема рилса</label>
+      <select name="preset">
+        <option value="">— своя тема (введите ниже) —</option>
+        <option>5 шагов поступления в магистратуру в Казахстане, по порядку</option>
+        <option>Из чего состоит комплексное тестирование и сколько времени отводится</option>
+        <option>Профильная и научно-педагогическая магистратура: что выбрать</option>
+        <option>3 ошибки, которые стоят баллов на английском в КТ</option>
+        <option>Как учить английский на слух: диктант по сценам из фильмов</option>
+        <option>«Без английского нельзя»: правда или нет</option>
+        <option>Как распределить подготовку, если до теста 2 месяца</option>
+        <option>«Мне 28, поздно?»: честный ответ</option>
+        <option>Как выбрать специальность и посмотреть требования по своей</option>
+        <option>Что делать в последнюю неделю перед тестированием</option>
+        <option>«Провалил(а) в первый раз»: что делать дальше</option>
+      </select>
+      <label>Своя тема (вместо списка)</label>
+      <input name="topic" placeholder="Например: чем ТГО отличается от английского">
+      <label>Аудитория</label>
+      <select name="aud"><option>Бакалавры 4 курса, 21–23 года</option><option>Работающие, 25–35 лет</option><option>Уже сдавали КТ</option></select>
+      <label>Длина</label>
+      <select name="len"><option>30 секунд</option><option selected>45 секунд</option><option>60 секунд</option></select>
+      <label>Язык</label>
+      <select name="lang"><option>Русский</option><option>Қазақша</option><option>Оба варианта</option></select>
+    </form>
 
-    <main>
-      <!-- Обзор -->
-      <section class="panel" id="p-overview">
-        <div class="page-head"><div><h1>Обзор</h1><p>Что происходит на платформе и что требует внимания.</p></div>
-          <div class="quick">
-            <button class="btn-primary" data-create="single"><span data-ic="plus" data-s="15"></span>Новый аккаунт</button>
-            <button class="btn-ghost" data-create="bulk">Создать пачку</button>
-          </div>
-        </div>
-        <div class="kpis" id="ovKpis"></div>
-        <div class="grid-2">
-          <div class="card"><div class="card-head"><h2>Требует внимания</h2></div><div id="ovAttention"></div></div>
-          <div class="card"><div class="card-head"><h2>Попытки за 14 дней</h2></div><div id="ovChart" class="trend"></div>
-            <div class="card-head" style="margin:22px 0 8px"><h2>Последние действия</h2><button class="btn-ghost btn-sm" data-go="audit">Весь журнал</button></div>
-            <div id="ovLog"></div>
-          </div>
-        </div>
-      </section>
+    <div id="freeHint" hidden class="sub">Пишите любые задачи внизу: правки сценария, перевод на казахский, идеи постов, ответы на комментарии.</div>
 
-      <!-- Пользователи -->
-      <section class="panel" id="p-users">
-        <div class="page-head"><div><h1>Пользователи <span class="muted" id="uTotal"></span></h1><p>Нажмите на пользователя, чтобы открыть карточку: доступ, пароль, результаты.</p></div>
-          <div class="quick">
-            <button class="btn-primary" data-create="single"><span data-ic="plus" data-s="15"></span>Новый аккаунт</button>
-            <button class="btn-ghost" data-create="bulk">Пачка</button>
-            <button class="btn-ghost" id="exportUsersBtn" title="Скачать список в CSV"><span data-ic="download" data-s="15"></span><span class="btn-label-hide">CSV</span></button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="toolbar">
-            <div class="search"><span data-ic="search" data-s="15"></span><input id="uSearch" type="text" placeholder="Поиск: логин, имя, телефон, город…" aria-label="Поиск пользователей"><kbd>/</kbd></div>
-            <select class="inline-select" id="uSort" aria-label="Сортировка">
-              <option value="new">Сначала новые</option>
-              <option value="old">Сначала старые</option>
-              <option value="active">Недавно активные</option>
-              <option value="inactive">Давно не заходили</option>
-              <option value="tests">Больше тестов</option>
-              <option value="name">По логину А–Я</option>
-            </select>
-          </div>
-          <div class="seg" id="uSeg"></div>
-          <div class="table-scroll"><table style="min-width:640px">
-            <thead><tr>
-              <th style="width:30px"><input type="checkbox" id="selAll" aria-label="Выбрать всех"></th>
-              <th>Пользователь</th><th>Доступ к тестам</th><th>Активность</th><th>Создан</th><th></th>
-            </tr></thead>
-            <tbody id="uRows"></tbody>
-          </table></div>
-          <div id="uEmpty" class="state hidden"><span data-ic="users" data-s="30"></span><span>Никого не найдено. Измените фильтр или поиск.</span></div>
-          <div class="bulkbar hidden" id="bulkBar">
-            <span><b id="bulkCount">0</b> выбрано</span>
-            <select class="inline-select" id="bulkDir" aria-label="Направление"></select>
-            <select class="inline-select" id="bulkLang" aria-label="Язык"><option value="ru">RU</option><option value="kk">KZ</option></select>
-            <select class="inline-select" id="bulkDays" aria-label="Срок"><option value="0">Бессрочно</option><option value="30">30 дней</option><option value="90">90 дней</option><option value="180">180 дней</option><option value="365">365 дней</option></select>
-            <button class="btn-primary btn-sm" id="bulkGrant">Выдать доступ</button>
-            <button class="btn-danger btn-sm" id="bulkRevoke">Отозвать</button>
-            <button class="btn-ghost btn-sm" id="bulkClear">Снять выбор</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Результаты -->
-      <section class="panel" id="p-results">
-        <div class="page-head"><div><h1>Результаты</h1><p>Сколько набрали и кто сдал. Нажмите на пользователя — откроется подробная статистика.</p></div>
-          <button class="btn-ghost" id="exportResBtn"><span data-ic="download" data-s="15"></span><span class="btn-label-hide">CSV</span></button>
-        </div>
-        <div class="card">
-          <div class="toolbar">
-            <div class="search"><span data-ic="search" data-s="15"></span><input id="rSearch" type="text" placeholder="Поиск: логин, имя, код теста…" aria-label="Поиск результатов"><kbd>/</kbd></div>
-            <select class="inline-select" id="rKind" aria-label="Тип теста"><option value="">Все типы</option><option value="subject">Тесты по предметам</option><option value="kt">Симуляции КТ</option></select>
-            <select class="inline-select" id="rPeriod" aria-label="Период"><option value="0">За всё время</option><option value="7">7 дней</option><option value="30">30 дней</option></select>
-          </div>
-          <div class="kpis" id="rKpis"></div>
-          <div class="sub-title">По пользователям</div>
-          <div class="table-scroll v"><table style="min-width:640px">
-            <thead><tr><th>Пользователь</th><th>Попыток</th><th>Лучший</th><th>Средний</th><th>Сдал КТ</th><th>Последний тест</th></tr></thead>
-            <tbody id="rUserRows"></tbody></table></div>
-          <div class="sub-title">Последние попытки</div>
-          <div class="table-scroll v"><table style="min-width:640px">
-            <thead><tr><th>Дата</th><th>Пользователь</th><th>Тест</th><th>Набрал</th><th>Результат</th><th>Итог</th></tr></thead>
-            <tbody id="rRows"></tbody></table></div>
-          <div id="rEmpty" class="state hidden"><span data-ic="chart" data-s="30"></span><span>Попыток по этим условиям нет.</span></div>
-        </div>
-      </section>
-
-      <!-- Аналитика -->
-      <section class="panel" id="p-analytics">
-        <div class="page-head"><div><h1>Аналитика</h1><p>Активность пользователей и вопросы, которые чаще всего вызывают ошибки.</p></div></div>
-        <div class="card">
-          <div class="sub-title">Попытки по дням <span class="muted">(30 дней)</span></div>
-          <div class="trend" id="dailyChart"></div>
-          <div class="sub-title">Давно не активны <span class="muted">(7+ дней или ни разу не входили)</span></div>
-          <div class="table-scroll v"><table style="min-width:560px">
-            <thead><tr><th>Пользователь</th><th>Последняя активность</th><th>Дней</th><th>Доступов</th><th></th></tr></thead>
-            <tbody id="inactiveRows"></tbody></table></div>
-          <div id="inactiveEmpty" class="state hidden"><span data-ic="check" data-s="30"></span><span>Все активны</span></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>Сложные вопросы</h2><button class="btn-ghost btn-sm" id="hardLoadBtn">Показать</button></div>
-          <p class="help" id="hardInfo">Вопросы, на которые чаще всего отвечают неверно (по сданным попыткам, от 3 ответов). Нажмите «Показать» — подсчёт может занять несколько секунд.</p>
-          <div class="table-scroll v"><table style="min-width:560px">
-            <thead><tr><th>Вопрос</th><th>Банк</th><th>Ошибок</th><th>Ответов</th><th></th></tr></thead>
-            <tbody id="hardRows"></tbody></table></div>
-        </div>
-      </section>
-
-      <!-- Контент -->
-      <section class="panel" id="p-content">
-        <div class="page-head"><div><h1>Контент</h1><p>Сообщение для всех, вопросы с ошибками и сводка по банкам.</p></div></div>
-        <div class="card">
-          <div class="card-head"><h2>Сообщение для пользователей</h2></div>
-          <p class="help">Показывается сверху на всех страницах сайта. Пользователь может закрыть его крестиком.</p>
-          <label for="bnText">Текст</label>
-          <textarea id="bnText" rows="2" maxlength="400" placeholder="Например: обновили вариант M019 — загляните в тесты"></textarea>
-          <div class="field-row">
-            <div><label for="bnKind">Тип</label><select id="bnKind"><option value="info">Информация (синий)</option><option value="warn">Важное (красный)</option></select></div>
-            <div style="display:flex;align-items:flex-end"><label class="chk"><input type="checkbox" id="bnActive"> Показывать на сайте</label></div>
-          </div>
-          <div id="bnPreview"></div>
-          <button class="btn-primary" id="bnSave">Сохранить</button>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>Вопросы с ошибками <span class="count">(<span id="flagCount">0</span>)</span></h2>
-            <label class="chk" style="margin:0"><input type="checkbox" id="flagsAll"> показывать решённые</label></div>
-          <div class="table-scroll v"><table style="min-width:560px">
-            <thead><tr><th>Вопрос</th><th>Заметка</th><th>Когда</th><th>Статус</th><th></th></tr></thead>
-            <tbody id="flagRows"></tbody></table></div>
-          <div id="flagEmpty" class="state hidden"><span data-ic="check" data-s="30"></span><span>Помеченных вопросов нет. Помечать можно в «Аналитика → Сложные вопросы».</span></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>Банки вопросов <span class="count">(<span id="bankCount">0</span>)</span></h2>
-            <div class="search"><span data-ic="search" data-s="15"></span><input id="bankSearch" type="text" placeholder="Поиск банка…" aria-label="Поиск банка"></div></div>
-          <div class="table-scroll v"><table style="min-width:520px">
-            <thead><tr><th>Банк</th><th>Вопросов</th><th>Тем</th><th>С конспектом</th><th>С разбором</th></tr></thead>
-            <tbody id="bankRows"></tbody></table></div>
-        </div>
-      </section>
-
-      <!-- Журнал -->
-      <section class="panel" id="p-audit">
-        <div class="page-head"><div><h1>Журнал действий</h1><p>Кто и что менял в админке (последние 200 записей).</p></div></div>
-        <div class="card">
-          <div class="toolbar"><div class="search"><span data-ic="search" data-s="15"></span><input id="aSearch" type="text" placeholder="Поиск по журналу…" aria-label="Поиск по журналу"></div></div>
-          <div class="table-scroll v"><table style="min-width:560px">
-            <thead><tr><th>Когда</th><th>Действие</th><th>Объект</th><th>Детали</th><th>IP</th></tr></thead>
-            <tbody id="aRows"></tbody></table></div>
-          <div id="aEmpty" class="state hidden"><span data-ic="clock" data-s="30"></span><span>Записей нет.</span></div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Карточка пользователя -->
-  <div class="modal-bg hidden" id="cardBg"><div class="modal" id="card" role="dialog" aria-modal="true" aria-label="Карточка пользователя"></div></div>
-
-  <!-- Создание аккаунтов -->
-  <div class="modal-bg hidden" id="createBg">
-    <div class="modal sm" role="dialog" aria-modal="true" aria-label="Новый аккаунт">
-      <div class="modal-head"><div class="who"><div class="ttl">Новый аккаунт</div></div><button class="x-btn" id="createClose" aria-label="Закрыть" data-ic="x"></button></div>
-      <div class="modal-body">
-        <div class="switch"><button class="on" id="swSingle">Один аккаунт</button><button id="swBulk">Пачка</button></div>
-        <div id="createSingle">
-          <p class="help" style="margin-top:0">Все поля необязательны — пустые сгенерируем сами.</p>
-          <label for="cName">Имя</label><input id="cName" type="text" placeholder="Имя клиента">
-          <div class="field-row"><div><label for="cEmail">Логин</label><input id="cEmail" type="text" placeholder="сгенерируем"></div>
-            <div><label for="cPassword">Пароль</label><input id="cPassword" type="text" placeholder="сгенерируем" autocomplete="off"></div></div>
-          <button class="btn-primary" id="createBtn" style="width:100%">Создать аккаунт</button>
-          <div id="cred" class="cred hidden"></div>
-        </div>
-        <div id="createBulk" class="hidden">
-          <p class="help" style="margin-top:0">Создаст нужное количество аккаунтов с готовыми логинами и паролями — удобно для группы.</p>
-          <div class="field-row"><div><label for="bCount">Сколько (1–100)</label><input id="bCount" type="number" min="1" max="100" value="10"></div>
-            <div><label for="bPrefix">Префикс логина</label><input id="bPrefix" type="text" placeholder="например, grp1-" maxlength="20"></div></div>
-          <button class="btn-primary" id="bulkCreateBtn" style="width:100%">Создать пачку</button>
-          <div id="bulkResult" class="hidden">
-            <div class="btn-row" style="margin:14px 0 10px"><button class="btn-ghost btn-sm" id="bulkCsvBtn">Скачать CSV</button><button class="btn-ghost btn-sm" id="bulkCopyBtn">Копировать всё</button></div>
-            <p class="muted" style="margin:0 0 8px;color:var(--warn)">Пароли показаны один раз — сохраните файл прямо сейчас.</p>
-            <div class="table-scroll v" style="max-height:260px"><table><thead><tr><th>#</th><th>Логин</th><th>Пароль</th></tr></thead><tbody id="bulkRows"></tbody></table></div>
-          </div>
-        </div>
-      </div>
+    <label class="check"><input type="checkbox" id="withVideo"> Добавить промты для AI-генератора видео</label>
+    <div class="row">
+      <button class="btn" id="go" type="button">Сгенерировать</button>
+      <button class="btn ghost" id="reset" type="button">Новый чат</button>
     </div>
-  </div>
+    <p class="sub" style="margin-top:12px">Бот не обещает грант и баллы, цены и сроки сверяйте с прайсом перед публикацией.</p>
+  </aside>
+
+  <main class="chat">
+    <div class="log" id="log"><div class="empty" id="empty">Заполните форму слева и нажмите «Сгенерировать».<br>Дальше можно просить правки в строке внизу: «сделай хук короче», «переведи на казахский».</div></div>
+    <div class="status" id="status"></div>
+    <div class="composer">
+      <textarea id="input" rows="1" placeholder="Напишите уточнение или правку…  (Enter — отправить, Shift+Enter — новая строка)"></textarea>
+      <button class="btn" id="send" type="button">Отправить</button>
+      <button class="btn ghost" id="stop" type="button" hidden>Стоп</button>
+    </div>
+  </main>
 </div>
-<div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script>
-const API_BASE = 'https://marshrut-9c5z.onrender.com';
-const KEY = 'marshrut_admin_key';
-const $ = id => document.getElementById(id);
-function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var log = $('#log'), statusEl = $('#status'), input = $('#input');
+  var mode = 'A', messages = [], busy = false, ctrl = null;
 
-/* ---------- Иконки ---------- */
-const ICONS = {
-  home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
-  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-  chart:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
-  pulse:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
-  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
-  clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
-  plus:'<path d="M12 5v14M5 12h14"/>',
-  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
-  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
-  refresh:'<path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
-  x:'<path d="M18 6L6 18M6 6l12 12"/>',
-  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
-  chevron:'<path d="M9 18l6-6-6-6"/>',
-  alert:'<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
-  check:'<path d="M20 6L9 17l-5-5"/>',
-  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
-  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
-};
-function ic(name, size){ size = size || 16; return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||''}</svg>`; }
-function fillIcons(root){ (root||document).querySelectorAll('[data-ic]').forEach(el => { if(!el.dataset.done){ el.innerHTML = ic(el.dataset.ic, Number(el.dataset.s)||16); el.dataset.done = '1'; } }); }
-
-/* ---------- Утилиты ---------- */
-const todayStr = () => new Date().toISOString().slice(0,10);
-function fmtD(d){ if(!d) return ''; const p = d.slice(0,10).split('-'); return p.length===3 ? p[2]+'.'+p[1]+'.'+p[0].slice(2) : d; }
-function daysSince(iso){
-  if(!iso) return null;
-  const t = Date.parse(iso.length===10 ? iso+'T00:00:00Z' : iso);
-  return isNaN(t) ? null : Math.floor((Date.now()-t)/864e5);
-}
-function daysUntil(date){ return Math.ceil((Date.parse(date+'T23:59:59Z') - Date.now())/864e5); }
-function agoText(iso){ const d = daysSince(iso); if(d===null) return 'ещё не входил'; if(d<=0) return 'сегодня'; if(d===1) return 'вчера'; return d+' дн. назад'; }
-function plural(n, a, b, c){ const m = Math.abs(n)%100, k = m%10; return (m>10&&m<20) ? c : k===1 ? a : (k>=2&&k<=4) ? b : c; }
-function toast(msg, kind){
-  const t = document.createElement('div'); t.className = 'toast' + (kind==='err' ? ' err' : ''); t.textContent = msg;
-  $('toasts').append(t); setTimeout(() => t.remove(), kind==='err' ? 6000 : 2800);
-}
-function copy(text, btn){
-  const done = () => { toast('Скопировано'); if(btn){ const t = btn.textContent; btn.textContent = '✓'; setTimeout(() => btn.textContent = t, 1200); } };
-  navigator.clipboard.writeText(text).then(done, () => toast('Не удалось скопировать', 'err'));
-}
-// raw=true — без защиты от формул (для сгенерированных паролей, которые могут начинаться с «-» или «=»)
-function csvCell(v, raw){ let s = String(v ?? ''); if(!raw && /^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g,'""') + '"'; }
-function downloadCsv(name, rows, raw){
-  const text = '﻿' + rows.map(r => r.map(c => csvCell(c, raw)).join(';')).join('\r\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], {type:'text/csv;charset=utf-8'}));
-  a.download = name; document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-const AVATAR_COLORS = ['#0A6CC9','#B08D46','#2F6F5E','#B14545','#6E4FA3','#1E7F8C'];
-function avatarHtml(name, email, big){
-  const label = (name || email || '?').trim();
-  let hash = 0; for (let i=0;i<label.length;i++) hash = (hash*31 + label.charCodeAt(i)) >>> 0;
-  return `<span class="avatar${big?' lg':''}" style="background:${AVATAR_COLORS[hash % AVATAR_COLORS.length]}">${esc(label.charAt(0).toUpperCase())}</span>`;
-}
-function pbar(p, bad){
-  const c = bad ? (p >= 60 ? 'var(--danger)' : p >= 30 ? 'var(--warn)' : 'var(--ok)') : (p >= 70 ? 'var(--ok)' : p >= 40 ? 'var(--warn)' : 'var(--danger)');
-  return `<div class="pbar"><div class="track"><div class="fill" style="width:${p}%;background:${c}"></div></div><b>${p}%</b></div>`;
-}
-function barsHtml(days){
-  const list = []; for (let i = days-1; i >= 0; i--) list.push(new Date(Date.now() - i*864e5).toISOString().slice(0,10));
-  const cnt = Object.fromEntries(list.map(d => [d, 0]));
-  resultsCache.forEach(r => { if (r.date in cnt) cnt[r.date]++; });
-  const max = Math.max(1, ...Object.values(cnt));
-  return `<div class="bars">${list.map(d => `<div class="b" style="height:${Math.max(2, cnt[d]/max*100)}%" title="${fmtD(d)}: ${cnt[d]}"></div>`).join('')}</div>
-    <div class="bars-x"><span>${fmtD(list[0])}</span><span>макс. за день: ${max}</span><span>${fmtD(list[days-1])}</span></div>`;
-}
-
-/* ---------- API ---------- */
-function getKey(){ try { return localStorage.getItem(KEY) || ''; } catch(e){ return ''; } }
-function setKey(v){ try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch(e){} }
-async function api(path, opts = {}){
-  // ключ передаём заголовком, не query-строкой — так он не оседает в логах сервера/прокси
-  const res = await fetch(API_BASE + path, {
-    method: opts.method || 'GET',
-    headers: {'Content-Type':'application/json', 'X-Admin-Key': getKey()},
-    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  /* ---------- вкладки ---------- */
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      mode = t.dataset.mode;
+      document.querySelectorAll('.tab').forEach(function (x) { x.classList.toggle('on', x === t); });
+      $('#formA').hidden = mode !== 'A'; $('#formB').hidden = mode !== 'B'; $('#freeHint').hidden = mode !== 'FREE';
+      $('#go').style.display = mode === 'FREE' ? 'none' : '';
+    });
   });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) { const e = new Error((data && data.error) || ('Ошибка ' + res.status)); e.status = res.status; throw e; }
-  return data;
-}
-// POST-действие: тост с результатом, true при успехе
-async function act(path, body, okMsg){
-  try { await api(path, { method:'POST', body }); if (okMsg) toast(okMsg); return true; }
-  catch(e){ handleErr(e); return false; }
-}
-function handleErr(e){
-  if (e.status === 401) { setKey(''); showGate(e.message); return; }
-  toast(e.message || 'Ошибка', 'err');
-}
+  fetch('/api/info').then(function (r) { return r.json(); }).then(function (i) { if (!i.hasKey) $('#keyWarn').style.display = 'block'; });
 
-/* ---------- Вход ---------- */
-function showGate(msg){
-  $('app').classList.add('hidden'); $('gate').classList.remove('hidden');
-  $('gateErr').textContent = msg || ''; $('gateKey').value = ''; $('gateKey').focus();
-}
-function showApp(){ $('gate').classList.add('hidden'); $('app').classList.remove('hidden'); }
-$('gateEye').onclick = () => { const i = $('gateKey'); i.type = i.type === 'password' ? 'text' : 'password'; };
-$('gateForm').onsubmit = async e => {
-  e.preventDefault();
-  const v = $('gateKey').value.trim(); if (!v) return;
-  setKey(v); $('gateErr').textContent = '';
-  showApp(); await loadAll();
-};
-$('logoutBtn').onclick = () => { if (confirm('Выйти? Ключ будет удалён из этого браузера.')) { setKey(''); showGate(''); } };
-
-/* ---------- Данные ---------- */
-let usersCache = [], resultsCache = [], auditCache = [], flagsCache = [], banksCache = [], testCodes = [], banner = null;
-const loaders = {
-  codes:   async () => { testCodes = (await api('/api/admin/test-codes')).tests || []; },
-  users:   async () => { usersCache = (await api('/api/admin/users')).users || []; },
-  results: async () => { resultsCache = (await api('/api/admin/results')).results || []; },
-  audit:   async () => { auditCache = (await api('/api/admin/audit-log')).entries || []; },
-  flags:   async () => { flagsCache = (await api('/api/admin/flags')).flags || []; },
-  banks:   async () => { banksCache = (await api('/api/admin/banks')).banks || []; },
-  banner:  async () => { banner = await api('/api/admin/banner'); fillBanner(); },
-};
-async function reload(...names){
-  if (!getKey()) return;
-  const rs = await Promise.allSettled(names.map(n => loaders[n]()));
-  const bad = rs.find(r => r.status === 'rejected');
-  if (bad) handleErr(bad.reason);
-  if (getKey()) { $('updated').textContent = 'обновлено ' + new Date().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}); renderAll(); }
-}
-const loadAll = () => reload('codes', 'users', 'results', 'audit', 'flags', 'banks', 'banner');
-$('refreshBtn').onclick = async () => { const b = $('refreshBtn'); b.disabled = true; await loadAll(); b.disabled = false; toast('Данные обновлены'); };
-
-/* ---------- Производные данные ---------- */
-const activeGrant = g => !g.expires_at || g.expires_at >= todayStr();
-function derive(){
-  const lastRes = new Map();
-  for (const r of resultsCache) if (!lastRes.has(r.user_id)) lastRes.set(r.user_id, r.date); // результаты идут от новых к старым
-  for (const u of usersCache) {
-    const login = (u.last_login_at || '').slice(0,10), res = lastRes.get(u.id) || '';
-    u.lastActive = res > login ? res : login;
-    u.days = daysSince(u.lastActive);
-    const age = daysSince(u.created_at);
-    u.inactive = !u.blocked && (u.days === null ? (age !== null && age >= 7) : u.days >= 7);
-    u.activeAccess = (u.access || []).filter(activeGrant).length;
-    u.expiring = (u.access || []).some(g => g.expires_at && g.expires_at >= todayStr() && daysUntil(g.expires_at) <= 7);
+  /* ---------- сообщения формы по шаблонам запроса ---------- */
+  function val(f, n) { return (f.elements[n].value || '').trim(); }
+  function buildRequest() {
+    if (mode === 'A') {
+      var f = $('#formA');
+      return 'НАПРАВЛЕНИЕ/УГОЛ: ' + val(f, 'angle') + '\nДАТА ТЕСТИРОВАНИЯ: ' + val(f, 'date') + '\nОФФЕР: ' + val(f, 'offer') +
+        '\nCTA И ССЫЛКА: ' + (val(f, 'cta') || '[подставлю позже]') + '\nБЮДЖЕТ В ДЕНЬ: ' + val(f, 'budget') + ' ₸\nЯЗЫК: ' + val(f, 'lang') +
+        (val(f, 'extra') ? '\nУТОЧНЕНИЕ: ' + val(f, 'extra') : '') + '\n\nСделай 3 разных рекламных рилса (боль, расчёт, доказательство) по структуре режима А.';
+    }
+    var g = $('#formB'), topic = val(g, 'topic') || val(g, 'preset');
+    if (!topic) { alert('Выберите тему из списка или впишите свою.'); return null; }
+    return 'ТЕМА / РУБРИКА: ' + topic + '\nАУДИТОРИЯ: ' + val(g, 'aud') + '\nЯЗЫК: ' + val(g, 'lang') + '\nДЛИНА: ' + val(g, 'len');
   }
-}
-const isKT = r => !!r.kind && r.kind.startsWith('kt:');
-const pct = r => r.total > 0 ? Math.round(r.score / r.total * 100) : 0;
-const SECTION_LABELS = { lang:'Язык', logic:'Логика', subj1:'Предмет 1', subj2:'Предмет 2', subj3:'Предмет 3', subj4:'Предмет 4', mock:'Пробный тест' };
-function kindLabel(r){ return isKT(r) ? 'Симуляция КТ' : 'Предмет' + (r.section ? ' · ' + (SECTION_LABELS[r.section] || r.section) : ''); }
-function verdictTag(r){ return !isKT(r) ? '<span class="tag neu">—</span>' : r.passed ? '<span class="tag ok">Сдал</span>' : '<span class="tag bad">Не сдал</span>'; }
-function langBadge(l){ return l === 'kk' ? 'KZ' : 'RU'; }
-function testLabel(code, language){
-  const t = testCodes.find(x => x.code === code && x.language === language) || testCodes.find(x => x.code === code);
-  if (!t) return code;
-  const prefix = t.gopCode ? `${t.gopCode} · ${t.code}` : t.code;
-  return (t.title ? `${prefix} — ${t.title}` : prefix) + ` [${langBadge(language)}]`;
-}
-function directions(){
-  const map = new Map();
-  testCodes.forEach(t => { if (!map.has(t.code)) map.set(t.code, { code:t.code, gopCode:t.gopCode, title:t.title, languages:[] }); map.get(t.code).languages.push(t.language); });
-  return [...map.values()].sort((a,b) => a.code.localeCompare(b.code));
-}
-const dirOptions = () => directions().map(d => `<option value="${esc(d.code)}">${d.gopCode ? esc(d.gopCode)+' · ' : ''}${esc(d.code)}${d.title ? ' — '+esc(d.title) : ''}</option>`).join('');
 
-/* ---------- Навигация ---------- */
-const TABS = ['overview','users','results','analytics','content','audit'];
-function goTab(tab, filter){
-  if (!TABS.includes(tab)) tab = 'overview';
-  if (tab === 'users' && filter) { uFilter = filter; $('uSearch').value = ''; renderUsers(); }
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tab === tab));
-  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('is-active', p.id === 'p-' + tab));
-  try { history.replaceState(null, '', '#' + tab); localStorage.setItem('adm_tab', tab); } catch(e){}
-  window.scrollTo({ top:0 });
-}
-document.querySelectorAll('.nav-btn').forEach(b => b.onclick = () => goTab(b.dataset.tab));
-document.addEventListener('click', e => {
-  const go = e.target.closest('[data-go]');
-  if (go) { goTab(go.dataset.go, go.dataset.filter); return; }
-  const cr = e.target.closest('[data-create]');
-  if (cr) { openCreate(cr.dataset.create); return; }
-  const op = e.target.closest('[data-open]');
-  if (op && !e.target.closest('input,button,select,a')) openCard(Number(op.dataset.open), op.dataset.opentab || 'manage');
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeCard(); closeCreate(); return; }
-  if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
-    const id = { users:'uSearch', results:'rSearch', audit:'aSearch' }[document.querySelector('.panel.is-active')?.id.slice(2)];
-    if (id) { e.preventDefault(); $(id).focus(); }
+  /* ---------- мини-рендер markdown ---------- */
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function inline(s) { return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<i>$2</i>'); }
+  function md(src) {
+    var lines = src.replace(/\r/g, '').split('\n'), out = [], i = 0;
+    while (i < lines.length) {
+      var l = lines[i];
+      if (/^```/.test(l)) { var code = []; i++; while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]); i++; out.push('<pre><code>' + esc(code.join('\n')) + '</code></pre>'); continue; }
+      if (/^\s*\|.*\|\s*$/.test(l) && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1] || '')) {
+        var head = l.trim().replace(/^\||\|$/g, '').split('|'); i += 2; var rows = [];
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(lines[i++].trim().replace(/^\||\|$/g, '').split('|'));
+        out.push('<table><thead><tr>' + head.map(function (c) { return '<th>' + inline(c.trim()) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+          rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + inline(c.trim()) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>'); continue;
+      }
+      var h = l.match(/^(#{1,4})\s+(.*)$/); if (h) { out.push('<h' + Math.min(h[1].length + 1, 4) + '>' + inline(h[2]) + '</h' + Math.min(h[1].length + 1, 4) + '>'); i++; continue; }
+      if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) { out.push('<hr>'); i++; continue; }
+      if (/^\s*[-*•]\s+/.test(l)) { var li = []; while (i < lines.length && /^\s*[-*•]\s+/.test(lines[i])) li.push('<li>' + inline(lines[i++].replace(/^\s*[-*•]\s+/, '')) + '</li>'); out.push('<ul>' + li.join('') + '</ul>'); continue; }
+      if (/^\s*\d+[.)]\s+/.test(l)) { var ol = []; while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) ol.push('<li>' + inline(lines[i++].replace(/^\s*\d+[.)]\s+/, '')) + '</li>'); out.push('<ol>' + ol.join('') + '</ol>'); continue; }
+      if (!l.trim()) { i++; continue; }
+      var p = [l]; i++; while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|\s*[-*•]\s|\s*\d+[.)]\s|\s*\|)/.test(lines[i])) p.push(lines[i++]);
+      out.push('<p>' + inline(p.join(' ')) + '</p>');
+    }
+    return out.join('');
   }
-});
 
-/* ---------- Рендер всего ---------- */
-function renderAll(){
-  derive();
-  renderOverview(); renderUsers(); renderResults(); renderAnalytics(); renderFlags(); renderBanks(); renderAudit(); renderNavCounts();
-  if (cardUid !== null) renderCard();
-}
-function renderNavCounts(){
-  $('navUsers').textContent = usersCache.length;
-  const inactive = usersCache.filter(u => u.inactive).length, open = flagsCache.filter(f => !f.resolved).length;
-  $('navAnalytics').textContent = inactive || ''; $('navAnalytics').classList.toggle('hidden', !inactive);
-  $('navContent').textContent = open || ''; $('navContent').classList.toggle('hidden', !open); $('navContent').classList.toggle('alert', open > 0);
-}
+  /* ---------- вывод ---------- */
+  function add(cls, html) { var d = document.createElement('div'); d.className = 'msg ' + cls; d.innerHTML = html || ''; log.appendChild(d); window.scrollTo(0, document.body.scrollHeight); return d; }
+  function setBusy(b) { busy = b; $('#send').disabled = b; $('#go').disabled = b; $('#stop').hidden = !b; }
+  function addTools(box, text) {
+    var t = document.createElement('div'); t.className = 'tools';
+    var c = document.createElement('button'); c.className = 'btn ghost'; c.textContent = 'Копировать';
+    c.onclick = function () { navigator.clipboard.writeText(text).then(function () { c.textContent = 'Скопировано ✓'; setTimeout(function () { c.textContent = 'Копировать'; }, 1500); }); };
+    var m = document.createElement('span'); m.className = 'meta'; box.__meta = m;
+    t.appendChild(c); t.appendChild(m); box.appendChild(t);
+  }
 
-/* ---------- Обзор ---------- */
-function renderOverview(){
-  const today = todayStr(), week = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
-  const newWeek = usersCache.filter(u => (u.created_at || '').slice(0,10) >= week).length;
-  const resWeek = resultsCache.filter(r => r.date >= week);
-  const avg = resWeek.length ? Math.round(resWeek.reduce((n,r) => n + pct(r), 0) / resWeek.length) : null;
-  const activeWeek = usersCache.filter(u => u.days !== null && u.days < 7).length;
-  const kpi = (n, l, go, extra) => `<button class="kpi" ${go ? `data-go="${go}"` : 'disabled'}><div class="n">${n}${extra || ''}</div><div class="l">${l}</div></button>`;
-  $('ovKpis').innerHTML =
-    kpi(usersCache.length, 'пользователей', 'users', newWeek ? `<small>+${newWeek} за неделю</small>` : '') +
-    kpi(activeWeek, 'активны за 7 дней', 'users') +
-    kpi(resWeek.length, 'попыток за 7 дней', 'results') +
-    kpi(avg === null ? '—' : avg + '%', 'средний результат (7 дней)', 'results');
-
-  const noAcc = usersCache.filter(u => u.activeAccess === 0 && !u.blocked).length;
-  const inactive = usersCache.filter(u => u.inactive).length;
-  const expiring = usersCache.filter(u => u.expiring).length;
-  const blocked = usersCache.filter(u => u.blocked).length;
-  const flags = flagsCache.filter(f => !f.resolved).length;
-  const rows = [
-    [noAcc, 'без доступа к тестам', 'users', 'noaccess', 'warn'],
-    [expiring, plural(expiring, 'доступ истекает', 'доступа истекают', 'доступов истекают') + ' в ближайшие 7 дней', 'users', 'expiring', 'warn'],
-    [inactive, 'не заходили 7+ дней', 'users', 'inactive', ''],
-    [blocked, plural(blocked, 'заблокированный аккаунт', 'заблокированных аккаунта', 'заблокированных аккаунтов'), 'users', 'blocked', ''],
-    [flags, plural(flags, 'вопрос с ошибкой ждёт правки', 'вопроса с ошибкой ждут правки', 'вопросов с ошибками ждут правки'), 'content', '', 'bad'],
-  ].filter(r => r[0] > 0);
-  $('ovAttention').innerHTML = rows.length
-    ? rows.map(r => `<button class="att ${r[4]}" data-go="${r[2]}" data-filter="${r[3]}"><span class="att-n">${r[0]}</span><span>${esc(r[1])}</span><span class="go">${ic('chevron', 16)}</span></button>`).join('')
-    : `<div class="all-good">${ic('check', 18)} Всё в порядке — ничего срочного нет</div>`;
-
-  $('ovChart').innerHTML = barsHtml(14);
-  $('ovLog').innerHTML = auditCache.slice(0, 5).map(e => `<div class="log-line"><span class="t">${esc(fmtD((e.created_at||'').slice(0,10)))} ${esc((e.created_at||'').slice(11,16))}</span><span><b>${esc(ACTION_LABELS[e.action] || e.action)}</b> <span class="muted">${esc(e.target || '')}</span></span></div>`).join('')
-    || '<div class="muted">Пока пусто</div>';
-}
-
-/* ---------- Пользователи ---------- */
-let uFilter = 'all'; const selected = new Set();
-const FILTERS = [['all','Все'],['access','С доступом'],['noaccess','Без доступа'],['expiring','Истекает скоро'],['inactive','Неактивные'],['blocked','Заблокированные']];
-function matchFilter(u, f){
-  switch (f) { case 'access': return u.activeAccess > 0; case 'noaccess': return u.activeAccess === 0;
-    case 'expiring': return u.expiring; case 'inactive': return u.inactive; case 'blocked': return u.blocked; default: return true; }
-}
-function filteredUsers(){
-  const q = $('uSearch').value.trim().toLowerCase(), qd = q.replace(/\D/g, '');
-  let list = usersCache.filter(u => matchFilter(u, uFilter));
-  if (q) list = list.filter(u => [u.id, u.email, u.name, u.city].some(v => String(v ?? '').toLowerCase().includes(q))
-    || (qd.length >= 4 && [u.phone, u.email].some(v => String(v ?? '').replace(/\D/g, '').slice(-10).includes(qd.slice(-10)))));
-  const s = $('uSort').value, big = 1e9;
-  const key = { new:u => -u.id, old:u => u.id, active:u => u.days ?? big, inactive:u => -(u.days ?? big), tests:u => -(u.results || 0) };
-  if (s === 'name') list = [...list].sort((a,b) => String(a.email).localeCompare(String(b.email)));
-  else list = [...list].sort((a,b) => key[s](a) - key[s](b));
-  return list;
-}
-function accessChips(u, max){
-  const acc = u.access || [];
-  if (!acc.length) return '<span class="muted">Нет доступа</span>';
-  const chip = g => { const exp = g.expires_at || '', expired = exp && exp < todayStr();
-    return `<span class="chip-acc ${esc(g.language)}${expired ? ' expired' : ''}" title="${esc(testLabel(g.code, g.language))}${exp ? ' · ' + (expired ? 'истёк ' : 'до ') + fmtD(exp) : ' · бессрочно'}">${esc(g.code)} ${langBadge(g.language)}${exp ? `<i>${expired ? 'истёк' : 'до ' + fmtD(exp)}</i>` : ''}</span>`; };
-  return acc.slice(0, max).map(chip).join('') + (acc.length > max ? `<span class="tag neu">+${acc.length - max}</span>` : '');
-}
-function renderUsers(){
-  $('uTotal').textContent = '(' + usersCache.length + ')';
-  $('uSeg').innerHTML = FILTERS.map(([k, label]) => `<button data-f="${k}" class="${uFilter === k ? 'on' : ''}">${label} <span class="n">${usersCache.filter(u => matchFilter(u, k)).length}</span></button>`).join('');
-  $('uSeg').querySelectorAll('button').forEach(b => b.onclick = () => { uFilter = b.dataset.f; renderUsers(); });
-  const list = filteredUsers();
-  $('uRows').innerHTML = list.map(u => {
-    const badges = [u.blocked ? '<span class="tag bad">Заблокирован</span>' : '', u.inactive ? '<span class="tag warn">Неактивен</span>' : '', u.expiring ? '<span class="tag warn">Доступ истекает</span>' : '', u.note ? '<span class="tag neu" title="' + esc(u.note) + '">заметка</span>' : ''].filter(Boolean).join('');
-    return `<tr class="row-click ${u.blocked ? 'is-blocked' : ''}" data-open="${u.id}" tabindex="0">
-      <td><input type="checkbox" data-sel="${u.id}" ${selected.has(u.id) ? 'checked' : ''} aria-label="Выбрать"></td>
-      <td><div class="user-cell">${avatarHtml(u.name, u.email)}<div><div class="u-main">${esc(u.email)}</div><div class="muted">${esc([u.name && u.name !== u.email ? u.name : '', u.city].filter(Boolean).join(' · ')) || '&nbsp;'}</div>${badges ? `<div class="u-badges">${badges}</div>` : ''}</div></div></td>
-      <td><div class="acc-chips">${accessChips(u, 3)}</div></td>
-      <td><div><b>${u.results || 0}</b> ${plural(u.results || 0, 'тест', 'теста', 'тестов')}</div><div class="muted">вход: ${esc(agoText(u.last_login_at))}</div></td>
-      <td class="muted">${esc((u.created_at || '').slice(0,10))}</td>
-      <td class="chev">${ic('chevron', 16)}</td></tr>`;
-  }).join('');
-  $('uEmpty').classList.toggle('hidden', list.length > 0);
-  $('uRows').querySelectorAll('tr').forEach(tr => tr.onkeydown = e => { if (e.key === 'Enter' && e.target === tr) openCard(Number(tr.dataset.open), 'manage'); });
-  $('uRows').querySelectorAll('[data-sel]').forEach(c => c.onchange = () => {
-    const id = Number(c.dataset.sel); c.checked ? selected.add(id) : selected.delete(id); updateBulkBar(list);
-  });
-  const dir = $('bulkDir'), cur = dir.value; dir.innerHTML = dirOptions(); if (cur) dir.value = cur;
-  updateBulkBar(list);
-}
-function updateBulkBar(list){
-  for (const id of [...selected]) if (!usersCache.some(u => u.id === id)) selected.delete(id);
-  $('bulkBar').classList.toggle('hidden', selected.size === 0);
-  $('bulkCount').textContent = selected.size;
-  $('selAll').checked = list.length > 0 && list.every(u => selected.has(u.id));
-}
-$('selAll').onchange = () => { const list = filteredUsers(); list.forEach(u => $('selAll').checked ? selected.add(u.id) : selected.delete(u.id)); renderUsers(); };
-$('bulkClear').onclick = () => { selected.clear(); renderUsers(); };
-async function bulkAccess(revoke){
-  const code = $('bulkDir').value, language = $('bulkLang').value, ids = [...selected], days = Number($('bulkDays').value);
-  if (!code || !ids.length) return;
-  const term = !revoke && days ? ` на ${days} дн.` : '';
-  if (!confirm(`${revoke ? 'Отозвать' : 'Выдать'} доступ к ${code} [${langBadge(language)}]${term} — ${ids.length} польз.?`)) return;
-  if (await act('/api/admin/bulk-access', { user_ids:ids, code, language, days, revoke }, revoke ? 'Доступ отозван' : 'Доступ выдан')) { selected.clear(); reload('users', 'audit'); }
-}
-$('bulkGrant').onclick = () => bulkAccess(false);
-$('bulkRevoke').onclick = () => bulkAccess(true);
-$('uSearch').addEventListener('input', renderUsers);
-$('uSort').onchange = renderUsers;
-$('exportUsersBtn').onclick = () => {
-  const rows = [['ID','Логин','Имя','Телефон','Город','Создан','Последний вход','Заблокирован','Доступы','Тестов','Заметка']];
-  filteredUsers().forEach(u => rows.push([u.id, u.email, u.name, u.phone, u.city, (u.created_at||'').slice(0,10), (u.last_login_at||'').slice(0,10), u.blocked ? 'да' : '',
-    (u.access||[]).map(g => g.code + '/' + g.language + (g.expires_at ? ' до ' + g.expires_at : '')).join(', '), u.results, u.note || '']));
-  downloadCsv('users-' + todayStr() + '.csv', rows);
-};
-
-/* ---------- Создание аккаунтов ---------- */
-let bulkAccounts = [];
-function openCreate(mode){
-  $('createBg').classList.remove('hidden'); document.body.style.overflow = 'hidden';
-  setCreateMode(mode === 'bulk' ? 'bulk' : 'single');
-}
-function closeCreate(){ $('createBg').classList.add('hidden'); if ($('cardBg').classList.contains('hidden')) document.body.style.overflow = ''; }
-function setCreateMode(m){
-  $('swSingle').classList.toggle('on', m === 'single'); $('swBulk').classList.toggle('on', m === 'bulk');
-  $('createSingle').classList.toggle('hidden', m !== 'single'); $('createBulk').classList.toggle('hidden', m !== 'bulk');
-  setTimeout(() => $(m === 'single' ? 'cName' : 'bCount').focus(), 30);
-}
-$('swSingle').onclick = () => setCreateMode('single'); $('swBulk').onclick = () => setCreateMode('bulk');
-$('createClose').onclick = closeCreate;
-$('createBg').addEventListener('click', e => { if (e.target === $('createBg')) closeCreate(); });
-$('createBtn').onclick = async () => {
-  const btn = $('createBtn'); btn.disabled = true; btn.textContent = 'Создаём…';
-  try {
-    const r = await api('/api/admin/create-user', { method:'POST', body:{ name:$('cName').value.trim(), email:$('cEmail').value.trim(), password:$('cPassword').value.trim() } });
-    const cred = $('cred'); cred.classList.remove('hidden');
-    cred.innerHTML = `<div class="line"><span class="k">Логин</span><span class="v">${esc(r.login)}</span><button data-c="${esc(r.login)}">Копировать</button></div>
-      <div class="line"><span class="k">Пароль</span><span class="v">${esc(r.password)}</span><button data-c="${esc(r.password)}">Копировать</button></div>
-      <div class="line"><span class="k">Вместе</span><span class="v">${esc(r.login)} / ${esc(r.password)}</span><button data-c="${esc(r.login + ' / ' + r.password)}">Копировать</button></div>
-      <p class="note">Пароль показан один раз — сохраните и передайте клиенту.</p>`;
-    cred.querySelectorAll('button').forEach(b => b.onclick = () => copy(b.dataset.c, b));
-    $('cName').value = ''; $('cEmail').value = ''; $('cPassword').value = '';
-    toast('Аккаунт создан'); reload('users', 'audit');
-  } catch(e){ handleErr(e); }
-  btn.disabled = false; btn.textContent = 'Создать аккаунт';
-};
-$('bulkCreateBtn').onclick = async () => {
-  const btn = $('bulkCreateBtn'); btn.disabled = true; btn.textContent = 'Создаём…';
-  try {
-    const r = await api('/api/admin/bulk-create', { method:'POST', body:{ count:Number($('bCount').value), prefix:$('bPrefix').value.trim() } });
-    bulkAccounts = r.accounts || [];
-    $('bulkRows').innerHTML = bulkAccounts.map((a, i) => `<tr><td class="muted">${i+1}</td><td>${esc(a.login)}</td><td><b>${esc(a.password)}</b></td></tr>`).join('');
-    $('bulkResult').classList.remove('hidden');
-    toast('Создано аккаунтов: ' + bulkAccounts.length); reload('users', 'audit');
-  } catch(e){ handleErr(e); }
-  btn.disabled = false; btn.textContent = 'Создать пачку';
-};
-$('bulkCsvBtn').onclick = () => downloadCsv('accounts-' + todayStr() + '.csv', [['Логин','Пароль'], ...bulkAccounts.map(a => [a.login, a.password])], true);
-$('bulkCopyBtn').onclick = () => copy(bulkAccounts.map(a => a.login + ' / ' + a.password).join('\n'), $('bulkCopyBtn'));
-
-/* ---------- Карточка пользователя ---------- */
-let cardUid = null, cardTab = 'manage';
-function openCard(uid, tab){
-  if (!usersCache.some(u => u.id === uid) && !resultsCache.some(r => r.user_id === uid)) return;
-  cardUid = uid; cardTab = tab || 'manage';
-  $('cardBg').classList.remove('hidden'); document.body.style.overflow = 'hidden';
-  $('cardBg').scrollTop = 0; renderCard();
-}
-function closeCard(){ cardUid = null; $('cardBg').classList.add('hidden'); if ($('createBg').classList.contains('hidden')) document.body.style.overflow = ''; }
-$('cardBg').addEventListener('click', e => { if (e.target === $('cardBg')) closeCard(); });
-
-function cardResultsHtml(rs){
-  if (!rs.length) return '<div class="state"><span>' + ic('chart', 30) + '</span><span>Попыток пока нет</span></div>';
-  const chrono = [...rs].reverse(), ktr = rs.filter(isKT), ktOk = ktr.filter(r => r.passed).length;
-  const avg = Math.round(rs.reduce((n, r) => n + pct(r), 0) / rs.length);
-  const first = pct(chrono[0]), last = pct(chrono[chrono.length - 1]);
-  const kpi = (n, l) => `<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
-  const pts = chrono.map((r, i) => [chrono.length > 1 ? 8 + i * (384 / (chrono.length - 1)) : 200, 8 + (100 - pct(r)) / 100 * 64]);
-  const trend = `<svg viewBox="0 0 400 80" preserveAspectRatio="none"><line x1="0" y1="${8 + 0.3*64}" x2="400" y2="${8 + 0.3*64}" stroke="var(--line)" stroke-dasharray="3 3"/>
-    <polyline fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" points="${pts.map(p => p.join(',')).join(' ')}"/>
-    ${pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="var(--accent)"/>`).join('')}</svg>`;
-  const groups = new Map();
-  rs.forEach(r => { const k = r.code + '|' + kindLabel(r); if (!groups.has(k)) groups.set(k, { code:r.code, label:kindLabel(r), list:[] }); groups.get(k).list.push(r); });
-  const gRows = [...groups.values()].sort((a, b) => b.list.length - a.list.length).map(g => {
-    const a = Math.round(g.list.reduce((n, r) => n + pct(r), 0) / g.list.length), b = Math.max(...g.list.map(pct));
-    return `<tr><td><b>${esc(g.code)}</b></td><td><span class="tag ${g.label.startsWith('Симуляция') ? 'kt' : 'neu'}">${esc(g.label)}</span></td><td>${g.list.length}</td><td>${pbar(a)}</td><td>${pbar(b)}</td></tr>`;
-  }).join('');
-  return `<div class="kpis">${kpi(rs.length, 'попыток')}${kpi(avg + '%', 'средний результат')}${kpi(Math.max(...rs.map(pct)) + '%', 'лучший')}
-      ${kpi(chrono.length > 1 ? (last - first >= 0 ? '+' : '') + (last - first) + '%' : '—', 'прогресс (первая → последняя)')}${kpi(ktr.length ? ktOk + '/' + ktr.length : '—', 'сдал КТ')}</div>
-    <div class="sub-title">Динамика результатов</div><div class="trend">${trend}</div>
-    <div class="sub-title">Слабые темы</div><div id="cardTopics" class="muted">Загрузка…</div>
-    <div class="sub-title">По тестам</div>
-    <div class="table-scroll"><table style="min-width:520px"><thead><tr><th>Код</th><th>Тип</th><th>Попыток</th><th>Средний</th><th>Лучший</th></tr></thead><tbody>${gRows}</tbody></table></div>
-    <div class="sub-title">Все попытки</div>
-    <div class="table-scroll v" style="max-height:340px"><table style="min-width:520px"><thead><tr><th>Дата</th><th>Тест</th><th>Набрал</th><th>Результат</th><th>Итог</th></tr></thead><tbody>${rs.map(r => `
-      <tr><td class="muted">${esc(r.date)}</td><td><span class="tag ${isKT(r) ? 'kt' : 'neu'}">${esc(kindLabel(r))}</span> <span class="muted">${esc(r.code)}</span></td>
-      <td><b>${r.score}</b> <span class="muted">/ ${r.total}</span></td><td>${pbar(pct(r))}</td><td>${verdictTag(r)}</td></tr>`).join('')}</tbody></table></div>`;
-}
-
-function cardManageHtml(u){
-  const today = todayStr();
-  const chips = (u.access || []).map(g => { const exp = g.expires_at || '', expired = exp && exp < today;
-    return `<span class="chip-acc ${esc(g.language)}${expired ? ' expired' : ''}" title="${esc(testLabel(g.code, g.language))}">${esc(g.code)} ${langBadge(g.language)}<i>${exp ? (expired ? 'истёк ' : 'до ') + fmtD(exp) : 'бессрочно'}</i>
-      <button data-revoke data-code="${esc(g.code)}" data-lang="${esc(g.language)}" aria-label="Отозвать доступ" title="Отозвать доступ">×</button></span>`; }).join('');
-  return `
-    <div class="box"><h3>Доступ к тестам</h3>
-      <div class="acc-chips">${chips || '<span class="muted">Доступа пока нет — выдайте ниже</span>'}</div>
-      <div class="grant-form">
-        <select id="gDir" aria-label="Направление">${dirOptions()}</select>
-        <select id="gLang" aria-label="Язык" style="flex:0 1 90px"></select>
-        <select id="gDays" aria-label="Срок" style="flex:0 1 140px"><option value="0">Бессрочно</option><option value="30">30 дней</option><option value="90">90 дней</option><option value="180">180 дней</option><option value="365">365 дней</option></select>
-        <button class="btn-primary" id="gGrant">Выдать</button>
-      </div>
-      <p class="muted" style="margin:8px 0 0">Если доступ уже есть, повторная выдача обновит срок.</p>
-    </div>
-    <div class="box"><h3>Заметка</h3>
-      <textarea id="gNote" rows="3" maxlength="500" placeholder="Например: связались 15.10, Алматы">${esc(u.note || '')}</textarea>
-      <button class="btn-ghost btn-sm" id="gNoteSave">Сохранить заметку</button></div>
-    <div class="box"><h3>Управление аккаунтом</h3>
-      <div class="btn-row">
-        <button class="btn-soft" id="gReset">Сбросить пароль</button>
-        <button class="btn-soft" id="gEnd">Завершить сессию</button>
-        <button class="${u.blocked ? 'btn-primary' : 'btn-danger'}" id="gBlock">${u.blocked ? 'Разблокировать' : 'Заблокировать'}</button>
-      </div>
-      <div id="gCred"></div>
-      <p class="muted" style="margin:10px 0 0">«Завершить сессию» — пользователю придётся войти заново. «Заблокировать» — вход закрыт, пока не разблокируете.</p>
-    </div>
-    <details class="danger"><summary>Опасные действия</summary>
-      <div class="btn-row"><button class="btn-danger" id="gClear" ${u.results ? '' : 'disabled'}>Очистить результаты</button><button class="btn-danger" id="gDelete">Удалить аккаунт</button></div></details>`;
-}
-
-function renderCard(){
-  const uid = cardUid, u = usersCache.find(x => x.id === uid);
-  const rs = resultsCache.filter(r => r.user_id === uid);
-  const base = u || (rs[0] ? { id:uid, email:rs[0].email, name:rs[0].name } : null);
-  if (!base) { closeCard(); return; }
-  const scroll = $('cardBg').scrollTop;
-  const badges = u ? [u.blocked ? '<span class="tag bad">Заблокирован</span>' : '', u.activeAccess ? `<span class="tag ok">Доступов: ${u.activeAccess}</span>` : '<span class="tag neu">Нет доступа</span>', u.inactive ? '<span class="tag warn">Неактивен</span>' : ''].join(' ') : '';
-  $('card').innerHTML = `
-    <div class="modal-head">${avatarHtml(base.name, base.email, true)}
-      <div class="who"><div class="ttl">${esc(base.email)}</div>
-        <div class="muted">${base.name && base.name !== base.email ? esc(base.name) + ' · ' : ''}ID #${base.id}${u ? ' · создан ' + esc((u.created_at || '').slice(0,10)) + ' · вход: ' + esc(agoText(u.last_login_at)) : ''}</div>
-        <div class="u-badges">${badges}</div></div>
-      <button class="x-btn" id="cardClose" aria-label="Закрыть">${ic('x', 16)}</button></div>
-    <div class="mtabs"><button data-ct="manage" class="${cardTab === 'manage' ? 'on' : ''}">Доступ и управление</button><button data-ct="results" class="${cardTab === 'results' ? 'on' : ''}">Результаты (${rs.length})</button></div>
-    <div class="modal-body">${cardTab === 'results' || !u ? cardResultsHtml(rs) : cardManageHtml(u)}</div>`;
-  $('cardBg').scrollTop = scroll;
-  fillIcons($('card'));
-  $('cardClose').onclick = closeCard;
-  $('card').querySelectorAll('[data-ct]').forEach(b => b.onclick = () => { cardTab = b.dataset.ct; renderCard(); });
-  if (cardTab === 'results' || !u) { if (rs.length) loadCardTopics(uid); return; }
-  wireManage(u);
-}
-
-function wireManage(u){
-  const uid = u.id;
-  const syncLang = () => {
-    const d = directions().find(x => x.code === $('gDir').value), sel = $('gLang');
-    const langs = d ? d.languages : [];
-    sel.innerHTML = ['ru', 'kk'].filter(l => langs.includes(l)).map(l => `<option value="${l}">${langBadge(l)}</option>`).join('');
-    $('gGrant').disabled = !langs.length;
-  };
-  $('gDir').onchange = syncLang; syncLang();
-  $('gGrant').onclick = async () => {
-    const code = $('gDir').value, language = $('gLang').value, days = Number($('gDays').value);
-    if (await act('/api/admin/grant-access', { user_id:uid, code, language, days }, `Доступ ${code} [${langBadge(language)}] выдан`)) reload('users', 'audit');
-  };
-  $('card').querySelectorAll('[data-revoke]').forEach(b => b.onclick = async () => {
-    if (!confirm(`Отозвать доступ к ${b.dataset.code} [${langBadge(b.dataset.lang)}]?`)) return;
-    if (await act('/api/admin/revoke-access', { user_id:uid, code:b.dataset.code, language:b.dataset.lang }, 'Доступ отозван')) reload('users', 'audit');
-  });
-  $('gNoteSave').onclick = async () => { if (await act('/api/admin/set-note', { id:uid, note:$('gNote').value.trim() }, 'Заметка сохранена')) reload('users', 'audit'); };
-  $('gReset').onclick = async () => {
-    if (!confirm('Сбросить пароль для ' + u.email + '? Старый пароль перестанет работать.')) return;
+  async function send(text) {
+    if (busy) return;
+    $('#empty') && $('#empty').remove();
+    messages.push({ role: 'user', content: text });
+    add('user').textContent = text;
+    var box = add('bot'), body = document.createElement('div'); body.className = 'md'; box.appendChild(body);
+    var acc = '', gotText = false; setBusy(true); statusEl.textContent = 'Пишу сценарий…'; ctrl = new AbortController();
     try {
-      const r = await api('/api/admin/reset-password', { method:'POST', body:{ id:uid } });
-      $('gCred').innerHTML = `<div class="cred"><div class="line"><span class="k">Новый пароль</span><span class="v">${esc(r.password)}</span><button id="gCopyPw">Копировать</button></div><p class="note">Показан один раз — передайте клиенту.</p></div>`;
-      $('gCopyPw').onclick = e => copy(r.password, e.target); toast('Пароль сброшен'); reload('audit');
-    } catch(e){ handleErr(e); }
-  };
-  $('gEnd').onclick = async () => { if (confirm('Завершить активную сессию пользователя? Ему придётся войти заново.')) { if (await act('/api/admin/end-session', { id:uid }, 'Сессия завершена')) reload('audit'); } };
-  $('gBlock').onclick = async () => {
-    const block = !u.blocked;
-    if (!confirm(block ? 'Заблокировать аккаунт? Сессия завершится, вход будет закрыт до разблокировки.' : 'Разблокировать аккаунт?')) return;
-    if (await act('/api/admin/set-blocked', { id:uid, blocked:block }, block ? 'Аккаунт заблокирован' : 'Аккаунт разблокирован')) reload('users', 'audit');
-  };
-  $('gClear').onclick = async () => {
-    if (!confirm('Очистить все результаты тестов и статистику по темам для ' + u.email + '? Аккаунт и доступы не тронутся. Действие необратимо.')) return;
-    if (await act('/api/admin/reset-progress', { id:uid }, 'Результаты очищены')) reload('users', 'results', 'audit');
-  };
-  $('gDelete').onclick = async () => {
-    if (!confirm('Удалить аккаунт ' + u.email + '? Результаты и избранное тоже удалятся. Действие необратимо.')) return;
-    if (await act('/api/admin/delete-user', { id:uid }, 'Аккаунт удалён')) { closeCard(); reload('users', 'results', 'audit'); }
-  };
-}
-function loadCardTopics(uid){
-  api('/api/admin/user-topics?id=' + uid).then(d => {
-    const box = $('cardTopics'); if (cardUid !== uid || !box) return;
-    const rows = (d.topics || []).map(t => ({ ...t, total:t.correct + t.wrong })).filter(t => t.total >= 3).sort((a, b) => a.correct / a.total - b.correct / b.total).slice(0, 12);
-    box.className = '';
-    box.innerHTML = rows.length ? `<div class="table-scroll"><table style="min-width:520px"><thead><tr><th>Тема</th><th>Тест</th><th>Верно / Неверно</th><th>Усвоение</th></tr></thead><tbody>${rows.map(t => `
-      <tr><td>${esc(t.topic)}</td><td class="muted">${esc(t.code)} · ${esc(SECTION_LABELS[t.section] || t.section)}</td><td><b>${t.correct}</b> / ${t.wrong}</td><td>${pbar(Math.round(t.correct / t.total * 100))}</td></tr>`).join('')}</tbody></table></div>`
-      : '<span class="muted">Недостаточно данных (нужно минимум 3 ответа по теме).</span>';
-  }).catch(() => { const box = $('cardTopics'); if (box) box.textContent = 'Не удалось загрузить темы.'; });
-}
+      var res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal,
+        body: JSON.stringify({ mode: mode, withVideo: $('#withVideo').checked, messages: messages }) });
+      if (!res.ok || !res.body) throw new Error('Сервер ответил ' + res.status);
+      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
+      for (;;) {
+        var r = await reader.read(); if (r.done) break;
+        buf += dec.decode(r.value, { stream: true });
+        var parts = buf.split('\n\n'); buf = parts.pop();
+        parts.forEach(function (chunk) {
+          var ev = (chunk.match(/^event: (.*)$/m) || [])[1], data = (chunk.match(/^data: (.*)$/m) || [])[1];
+          if (!ev || data === undefined) return; var d = JSON.parse(data);
+          if (ev === 'text') { gotText = true; acc += d; body.innerHTML = md(acc); statusEl.textContent = ''; window.scrollTo(0, document.body.scrollHeight); }
+          else if (ev === 'status' && !gotText) statusEl.textContent = 'Думаю…';
+          else if (ev === 'error') { box.classList.add('err'); body.innerHTML += '<p>' + esc(d) + '</p>'; }
+          else if (ev === 'note') body.innerHTML += '<p><i>' + esc(d) + '</i></p>';
+          else if (ev === 'usage') { box.__usage = d; }
+        });
+      }
+      if (acc) { messages.push({ role: 'assistant', content: acc }); addTools(box, acc); if (box.__usage) box.__meta.textContent = box.__usage.output + ' токенов ответа'; }
+      else { messages.pop(); }
+    } catch (e) {
+      if (e.name === 'AbortError') { if (acc) { messages.push({ role: 'assistant', content: acc }); addTools(box, acc); } else messages.pop(); statusEl.textContent = 'Остановлено.'; }
+      else { box.classList.add('err'); body.innerHTML = '<p>' + esc(e.message || 'Ошибка связи') + '</p>'; messages.pop(); }
+    } finally { setBusy(false); if (statusEl.textContent !== 'Остановлено.') statusEl.textContent = ''; ctrl = null; }
+  }
 
-/* ---------- Результаты ---------- */
-function filteredResults(){
-  const q = $('rSearch').value.trim().toLowerCase(), kind = $('rKind').value, days = Number($('rPeriod').value);
-  const from = days ? new Date(Date.now() - days*864e5).toISOString().slice(0,10) : '';
-  return resultsCache.filter(r => (!q || [r.email, r.name, r.code, r.user_id].some(v => String(v ?? '').toLowerCase().includes(q))) && (!kind || (kind === 'kt' ? isKT(r) : !isKT(r))) && (!from || r.date >= from));
-}
-function renderResults(){
-  const list = filteredResults();
-  $('rEmpty').classList.toggle('hidden', list.length > 0);
-  const users = new Set(list.map(r => r.user_id));
-  const avg = list.length ? Math.round(list.reduce((n, r) => n + pct(r), 0) / list.length) : 0;
-  const kt = list.filter(isKT), ktOk = kt.filter(r => r.passed).length, best = list.reduce((m, r) => Math.max(m, pct(r)), 0);
-  const kpi = (n, l) => `<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
-  $('rKpis').innerHTML = kpi(list.length, 'попыток') + kpi(users.size, 'человек прошли тесты') + kpi(list.length ? avg + '%' : '—', 'средний результат') + kpi(list.length ? best + '%' : '—', 'лучший результат')
-    + kpi(kt.length ? `${ktOk}/${kt.length}` : '—', 'сдали симуляцию КТ') + kpi(kt.length ? Math.round(ktOk / kt.length * 100) + '%' : '—', 'доля сдавших КТ');
-  const byUser = new Map();
-  list.forEach(r => { if (!byUser.has(r.user_id)) byUser.set(r.user_id, []); byUser.get(r.user_id).push(r); });
-  const rows = [...byUser.values()].map(rs => { const ktr = rs.filter(isKT);
-    return { u:rs[0], n:rs.length, best:Math.max(...rs.map(pct)), avg:Math.round(rs.reduce((n, r) => n + pct(r), 0) / rs.length), ktOk:ktr.filter(r => r.passed).length, ktN:ktr.length, last:rs[0] }; })
-    .sort((a, b) => b.n - a.n || b.avg - a.avg);
-  $('rUserRows').innerHTML = rows.map(x => `<tr class="row-click" data-open="${x.u.user_id}" data-opentab="results">
-    <td><div class="user-cell">${avatarHtml(x.u.name, x.u.email)}<div><div class="u-main">${esc(x.u.email)}</div>${x.u.name && x.u.name !== x.u.email ? `<div class="muted">${esc(x.u.name)}</div>` : ''}</div></div></td>
-    <td><b>${x.n}</b></td><td>${pbar(x.best)}</td><td>${pbar(x.avg)}</td>
-    <td>${x.ktN ? `<span class="tag ${x.ktOk ? 'ok' : 'bad'}">${x.ktOk}/${x.ktN}</span>` : '<span class="muted">—</span>'}</td>
-    <td class="muted">${esc(fmtD(x.last.date))} · ${esc(x.last.code)}</td></tr>`).join('');
-  $('rRows').innerHTML = list.slice(0, 300).map(r => `<tr class="row-click" data-open="${r.user_id}" data-opentab="results">
-    <td class="muted">${esc(fmtD(r.date))}</td><td>${esc(r.email)}</td>
-    <td><span class="tag ${isKT(r) ? 'kt' : 'neu'}">${esc(kindLabel(r))}</span> <span class="muted">${esc(r.code)}</span></td>
-    <td><b>${r.score}</b> <span class="muted">/ ${r.total}</span></td><td>${pbar(pct(r))}</td><td>${verdictTag(r)}</td></tr>`).join('');
-}
-['rSearch'].forEach(id => $(id).addEventListener('input', renderResults));
-$('rKind').onchange = $('rPeriod').onchange = renderResults;
-$('exportResBtn').onclick = () => {
-  const rows = [['Дата','Логин','Имя','Код','Тип','Блок','Набрал','Всего','Процент','Итог']];
-  filteredResults().forEach(r => rows.push([r.date, r.email, r.name, r.code, isKT(r) ? 'КТ' : 'Предмет', r.section || '', r.score, r.total, pct(r), isKT(r) ? (r.passed ? 'Сдал' : 'Не сдал') : '']));
-  downloadCsv('results-' + todayStr() + '.csv', rows);
-};
-
-/* ---------- Аналитика ---------- */
-function renderAnalytics(){
-  $('dailyChart').innerHTML = barsHtml(30);
-  const rows = usersCache.filter(u => u.inactive).sort((a, b) => (b.days ?? 1e9) - (a.days ?? 1e9)).slice(0, 100);
-  $('inactiveRows').innerHTML = rows.map(u => `<tr class="row-click" data-open="${u.id}">
-    <td><div class="user-cell">${avatarHtml(u.name, u.email)}<div class="u-main">${esc(u.email)}</div></div></td>
-    <td>${u.lastActive ? esc(fmtD(u.lastActive)) : '<span class="muted">никогда</span>'}</td><td>${u.days === null ? '—' : u.days}</td><td>${u.activeAccess}</td><td class="chev">${ic('chevron', 16)}</td></tr>`).join('');
-  $('inactiveEmpty').classList.toggle('hidden', rows.length > 0);
-}
-async function loadHard(){
-  const btn = $('hardLoadBtn'); btn.disabled = true; btn.textContent = 'Считаем…';
-  try {
-    const d = await api('/api/admin/hard-questions'), qs = d.questions || [];
-    $('hardInfo').textContent = qs.length ? `Проанализировано попыток: ${d.attempts_scanned}. Вопросы с самой высокой долей ошибок (от 3 ответов).` : `Недостаточно данных: проанализировано попыток — ${d.attempts_scanned}.`;
-    $('hardRows').innerHTML = qs.map(q => `<tr><td>${esc(q.question)}${q.topic ? `<br><span class="muted">${esc(q.topic)}</span>` : ''}</td><td class="muted">${esc(q.bank)} #${q.idx}</td>
-      <td>${pbar(Math.round(q.wrong_rate * 100), true)}</td><td>${q.attempts}</td>
-      <td><button class="btn-soft btn-sm" data-flag-bank="${esc(q.bank)}" data-flag-idx="${q.idx}">Пометить</button></td></tr>`).join('');
-  } catch(e){ handleErr(e); }
-  btn.disabled = false; btn.textContent = 'Обновить';
-}
-$('hardLoadBtn').onclick = loadHard;
-$('hardRows').addEventListener('click', async e => {
-  const b = e.target.closest('[data-flag-bank]'); if (!b) return;
-  const note = prompt('Что не так с вопросом? (необязательно)'); if (note === null) return;
-  if (await act('/api/admin/flag-question', { bank:b.dataset.flagBank, idx:Number(b.dataset.flagIdx), note }, 'Вопрос помечен')) { b.textContent = '✓ Помечен'; b.disabled = true; reload('flags', 'audit'); }
-});
-
-/* ---------- Контент ---------- */
-function bannerColor(kind){ return kind === 'warn' ? '#B14545' : '#0A6CC9'; }
-function renderBannerPreview(){
-  const t = $('bnText').value.trim();
-  $('bnPreview').innerHTML = t ? `<div class="banner-preview" style="background:${bannerColor($('bnKind').value)}">${esc(t)}</div>` : '';
-}
-function fillBanner(){ if (!banner) return; $('bnText').value = banner.text || ''; $('bnKind').value = banner.kind || 'info'; $('bnActive').checked = !!banner.active; renderBannerPreview(); }
-$('bnText').addEventListener('input', renderBannerPreview); $('bnKind').onchange = renderBannerPreview;
-$('bnSave').onclick = async () => {
-  if (await act('/api/admin/banner', { text:$('bnText').value.trim(), kind:$('bnKind').value, active:$('bnActive').checked }, $('bnActive').checked ? 'Сохранено — сообщение видно на сайте' : 'Сохранено — сообщение скрыто')) reload('banner', 'audit');
-};
-function renderFlags(){
-  const all = $('flagsAll').checked, list = flagsCache.filter(f => all || !f.resolved);
-  $('flagCount').textContent = flagsCache.filter(f => !f.resolved).length;
-  $('flagEmpty').classList.toggle('hidden', list.length > 0);
-  $('flagRows').innerHTML = list.map(f => `<tr style="${f.resolved ? 'opacity:.55' : ''}"><td>${esc(f.question)}<br><span class="muted">${esc(f.bank)} #${f.idx}</span></td>
-    <td>${esc(f.note || '—')}</td><td class="muted">${esc((f.created_at || '').slice(0,10))}</td>
-    <td>${f.resolved ? '<span class="tag ok">Решено</span>' : '<span class="tag bad">Открыто</span>'}</td>
-    <td><button class="btn-soft btn-sm" data-resolve="${f.id}" data-to="${f.resolved ? 0 : 1}">${f.resolved ? 'Вернуть' : 'Решено'}</button></td></tr>`).join('');
-}
-$('flagsAll').onchange = renderFlags;
-$('flagRows').addEventListener('click', async e => {
-  const b = e.target.closest('[data-resolve]'); if (!b) return;
-  if (await act('/api/admin/resolve-flag', { id:Number(b.dataset.resolve), resolved:b.dataset.to === '1' })) reload('flags', 'audit');
-});
-function renderBanks(){
-  const q = $('bankSearch').value.trim().toLowerCase(), list = banksCache.filter(b => !q || b.id.toLowerCase().includes(q));
-  $('bankCount').textContent = banksCache.length;
-  const cell = (n, total) => total ? `${n} <span class="muted">(${Math.round(n / total * 100)}%)</span>` : '—';
-  $('bankRows').innerHTML = list.map(b => `<tr><td><b>${esc(b.id)}</b></td><td>${b.questions}</td><td>${b.topics}</td><td>${cell(b.conspects, b.questions)}</td><td>${cell(b.explained, b.questions)}</td></tr>`).join('');
-}
-$('bankSearch').addEventListener('input', renderBanks);
-
-/* ---------- Журнал ---------- */
-const ACTION_LABELS = {
-  create_user:'Создан аккаунт', delete_user:'Удалён аккаунт', reset_password:'Сброшен пароль', reset_progress:'Очищен прогресс',
-  grant_access:'Выдан доступ', revoke_access:'Отозван доступ', bulk_create:'Массовое создание', bulk_grant:'Массовая выдача доступа',
-  bulk_revoke:'Массовый отзыв доступа', set_note:'Изменена заметка', block_user:'Заблокирован', unblock_user:'Разблокирован',
-  end_session:'Завершена сессия', set_banner:'Изменён баннер', flag_question:'Помечен вопрос', resolve_flag:'Пометка вопроса',
-};
-function renderAudit(){
-  const q = $('aSearch').value.trim().toLowerCase();
-  const list = auditCache.filter(e => !q || [ACTION_LABELS[e.action], e.action, e.target, e.detail, e.actor_ip].some(v => String(v ?? '').toLowerCase().includes(q)));
-  $('aRows').innerHTML = list.map(e => `<tr><td class="muted">${esc((e.created_at || '').replace('T', ' ').slice(0, 19))}</td><td>${esc(ACTION_LABELS[e.action] || e.action)}</td>
-    <td>${esc(e.target || '')}</td><td class="muted">${esc(e.detail || '')}</td><td class="muted">${esc(e.actor_ip || '')}</td></tr>`).join('');
-  $('aEmpty').classList.toggle('hidden', list.length > 0);
-}
-$('aSearch').addEventListener('input', renderAudit);
-
-/* ---------- Старт ---------- */
-fillIcons();
-(function init(){
-  let tab = (location.hash || '').slice(1);
-  if (!TABS.includes(tab)) { try { tab = localStorage.getItem('adm_tab') || 'overview'; } catch(e){ tab = 'overview'; } }
-  goTab(tab);
-  if (getKey()) { showApp(); loadAll(); } else showGate('');
+  $('#go').addEventListener('click', function () { var t = buildRequest(); if (t) send(t); });
+  $('#send').addEventListener('click', function () { var t = input.value.trim(); if (t) { input.value = ''; send(t); } });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#send').click(); } });
+  $('#stop').addEventListener('click', function () { if (ctrl) ctrl.abort(); });
+  $('#reset').addEventListener('click', function () { if (busy && ctrl) ctrl.abort(); messages = []; log.innerHTML = '<div class="empty" id="empty">Новый чат. Заполните форму слева и нажмите «Сгенерировать».</div>'; statusEl.textContent = ''; });
+  $('#go').style.display = '';
 })();
 </script>
 </body>
